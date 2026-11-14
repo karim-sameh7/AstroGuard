@@ -1,0 +1,2963 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>AstroGuard — Operational Bio-Astronautics Clinical Telemetry System</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpolygon points='50,10 90,90 10,90' fill='%230284c7'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg: #0e131d;
+  --surface: #131926;
+  --panel: #172132;
+  --panel-hover: #1c273b;
+  --card: #1a2436;
+  --border: rgba(148, 163, 184, 0.14);
+  --border-focus: #38bdf8;
+  --text-main: #f1f5f9;
+  --text-muted: #94a3b8;
+  --blue: #0284c7;
+  --cyan: #38bdf8;
+  --teal: #14b8a6;
+  --green: #22c55e;
+  --amber: #f59e0b;
+  --red: #f43f5e;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  background: var(--bg);
+  color: var(--text-main);
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-size: 12px;
+  line-height: 1.5;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── MISSION COMMAND HEADER ── */
+.top-header{
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px 18px;
+  padding: 10px 24px;
+  background: #090e1a;
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+.brand-block{
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.mission-badge{
+  font-family: "JetBrains Mono", monospace;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  color: #fff;
+  background: #1e3a8a;
+  border: 1px solid #3b82f6;
+  padding: 3px 8px;
+  border-radius: 4px;
+}
+.brand-name{
+  font-size: 15px;
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: 0.3px;
+}
+.brand-name span{
+  color: #38bdf8;
+  font-weight: 500;
+}
+.telemetry-clocks{
+  display: flex;
+  gap: 16px;
+  font-family: "JetBrains Mono", monospace;
+  font-size: 11px;
+  color: var(--text-muted);
+}
+.telemetry-clocks b{color: #fff}
+
+.header-actions{
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.ctl-select, .ctl-input{
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--text-main);
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-family: inherit;
+}
+.ctl-select:focus, .ctl-input:focus{
+  outline: none;
+  border-color: var(--border-focus);
+}
+.btn-primary{
+  background: #0284c7;
+  color: #fff;
+  border: none;
+  padding: 5px 12px;
+  border-radius: 4px;
+  font-weight: 600;
+  font-size: 11px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+.btn-primary:hover{background: #0369a1}
+.btn-secondary{
+  background: var(--panel);
+  border: 1px solid var(--border);
+  color: var(--text-main);
+  padding: 5px 12px;
+  border-radius: 4px;
+  font-weight: 500;
+  font-size: 11px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.btn-secondary:hover{border-color: #3b82f6; color: #38bdf8}
+.btn-danger{
+  background: rgba(239,68,68,0.12);
+  border: 1px solid rgba(239,68,68,0.4);
+  color: #fca5a5;
+  padding: 5px 12px;
+  border-radius: 4px;
+  font-weight: 600;
+  font-size: 11px;
+  cursor: pointer;
+}
+.btn-danger:hover{background: #dc2626; color: #fff}
+
+/* ── EMERGENCY BANNER ── */
+#spe-emergency-bar{
+  display: none;
+  background: #7f1d1d;
+  color: #fee2e2;
+  border-bottom: 1px solid var(--red);
+  padding: 8px 24px;
+  font-family: "JetBrains Mono", monospace;
+  font-size: 11px;
+  font-weight: 700;
+  text-align: center;
+}
+
+/* ── CREW ROSTER & REGISTRATION DECK ── */
+.crew-deck{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 8px 24px;
+  background: #070d18;
+  border-bottom: 1px solid var(--border);
+  overflow-x: auto;
+}
+.crew-slots-list{
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+.crew-card-tab{
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  padding: 6px 12px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  min-width: 200px;
+  user-select: none;
+}
+.crew-card-tab:hover{background: var(--panel); border-color: #2b4269}
+.crew-card-tab.active{
+  background: #11203b;
+  border-color: #38bdf8;
+}
+.crew-avatar-callsign{
+  font-family: "JetBrains Mono", monospace;
+  font-size: 10px;
+  font-weight: 700;
+  color: #38bdf8;
+  background: rgba(56,189,248,0.1);
+  padding: 3px 6px;
+  border-radius: 3px;
+}
+.crew-tab-info .name{font-weight: 600; font-size: 12px; color: #fff}
+.crew-tab-info .role{font-size: 10px; color: var(--text-muted)}
+.status-pill{
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  margin-left: auto;
+}
+.st-0{background: var(--green)}
+.st-1{background: var(--amber)}
+.st-2{background: var(--red)}
+
+/* ── NAV TABS ── */
+.nav-tab-strip{
+  display: flex;
+  background: #050812;
+  border-bottom: 1px solid var(--border);
+  padding: 0 24px;
+}
+.tab-btn{
+  padding: 10px 18px;
+  font-size: 11px;
+  font-weight: 600;
+  font-family: "JetBrains Mono", monospace;
+  color: var(--text-muted);
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: all 0.15s ease;
+  letter-spacing: 0.3px;
+}
+.tab-btn:hover{color: #fff}
+.tab-btn.active{
+  color: #38bdf8;
+  border-bottom-color: #38bdf8;
+  background: rgba(56,189,248,0.05);
+}
+.tab-view{display: none}
+.tab-view.active{display: block}
+
+/* ── WORKSPACE 3-COLUMN GRID ── */
+.flight-deck-grid{
+  display: grid;
+  grid-template-columns: 340px 1fr 340px;
+  gap: 14px;
+  padding: 14px 24px;
+  max-width: 1560px;
+  margin: auto;
+}
+@media(max-width:1180px){.flight-deck-grid{grid-template-columns: 1fr}}
+
+.panel-box{
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 14px;
+}
+.panel-head{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--border);
+}
+.panel-title{
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  color: var(--text-muted);
+  font-family: "JetBrains Mono", monospace;
+}
+.panel-tag{
+  font-family: "JetBrains Mono", monospace;
+  font-size: 10px;
+  color: #38bdf8;
+}
+
+/* ── LIVE ECG CANVAS ── */
+.ecg-box{
+  background: #03060f;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 8px 10px;
+  margin-bottom: 10px;
+  position: relative;
+}
+.ecg-title{
+  position: absolute;
+  top: 6px;
+  left: 10px;
+  font-family: "JetBrains Mono", monospace;
+  font-size: 9.5px;
+  font-weight: 700;
+  color: var(--green);
+}
+#ecg-canvas{
+  width: 100%;
+  height: 42px;
+  display: block;
+}
+
+/* ── ANATOMICAL DIGITAL TWIN WITH CALLOUTS ── */
+.anatomy-viewport{
+  background: #03060f;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 12px;
+  text-align: center;
+  position: relative;
+}
+.layer-toggles{
+  display: flex;
+  gap: 4px;
+  justify-content: center;
+  margin-bottom: 10px;
+}
+.layer-btn{
+  background: #09101d;
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  padding: 3px 8px;
+  border-radius: 3px;
+  font-size: 9.5px;
+  font-family: "JetBrains Mono", monospace;
+  cursor: pointer;
+}
+.layer-btn.active{
+  border-color: #38bdf8;
+  color: #fff;
+  background: rgba(56,189,248,0.15);
+}
+
+svg{max-width: 100%}
+.sil-layer{fill: #0c1322; stroke: none}
+.sil-outline{fill: none; stroke: #1e2c47; stroke-width: 1.5}
+.anatomical-mesh{fill: none; stroke: #1a273e; stroke-width: 0.6; stroke-dasharray: 2 2}
+.organ-shape{fill-opacity: 0.35; stroke-width: 1.3; stroke: #475569; transition: all 0.2s}
+.bone-structure{fill: none; stroke-width: 2.2; stroke-linecap: round; stroke-opacity: 0.8}
+.st-0{stroke: var(--green); fill: var(--green)}
+.st-1{stroke: var(--amber); fill: var(--amber)}
+.st-2{stroke: var(--red); fill: var(--red)}
+.clickable-target{cursor: pointer}
+.clickable-target circle{stroke: #070a12; stroke-width: 2.5; transition: all 0.2s}
+.clickable-target.sel circle{stroke: #38bdf8; stroke-width: 3}
+.clickable-target text{
+  font-size: 9.5px;
+  font-family: "JetBrains Mono", monospace;
+  font-weight: 700;
+  fill: #fff;
+  paint-order: stroke;
+  stroke: #070a12;
+  stroke-width: 2.5;
+}
+@keyframes ringPing{50%{r: 11px; fill-opacity: 0.7}}
+.st-1 circle, .st-2 circle{animation: ringPing 1.3s infinite}
+
+.callout-deck{
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 10px;
+}
+.callout-btn{
+  background: #070c18;
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  padding: 4px 8px;
+  border-radius: 3px;
+  font-size: 10px;
+  font-family: "JetBrains Mono", monospace;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+.callout-btn:hover{color: #fff; border-color: #38bdf8}
+.callout-btn.active{color: #38bdf8; border-color: #38bdf8; background: rgba(56,189,248,0.12)}
+
+/* ── BIOMETRIC CHANNELS & SPARKLINES ── */
+.vitals-stack{
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+.vital-strip{
+  display: grid;
+  grid-template-columns: 1fr auto 95px;
+  gap: 10px;
+  align-items: center;
+  background: #090e1b;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 8px 12px;
+}
+.vital-info .title{font-weight: 600; font-size: 12px; display: flex; align-items: center; gap: 6px}
+.vital-info .envelope{font-size: 10px; color: var(--text-muted); font-family: "JetBrains Mono", monospace}
+.vital-reading{font-family: "JetBrains Mono", monospace; font-size: 16px; font-weight: 700}
+
+/* ── PROTOCOLS & CLINICAL REASONING ── */
+.clinical-memo{
+  background: #070c18;
+  border: 1px solid var(--border);
+  border-left: 3px solid #38bdf8;
+  border-radius: 4px;
+  padding: 10px 12px;
+  margin-bottom: 10px;
+}
+.memo-head{
+  font-family: "JetBrains Mono", monospace;
+  font-size: 10px;
+  font-weight: 700;
+  color: #38bdf8;
+  text-transform: uppercase;
+  margin-bottom: 3px;
+  display: flex;
+  justify-content: space-between;
+}
+.memo-body{font-size: 11px; color: var(--text-main); line-height: 1.55}
+
+/* ── RADAR & TELEMETRY ── */
+.radar-container{
+  background: #03060f;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 10px;
+  text-align: center;
+}
+.radar-stats{
+  margin-top: 8px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  justify-content: center;
+  font-family: "JetBrains Mono", monospace;
+  font-size: 10px;
+  color: var(--text-muted);
+}
+.stat-tag{background: #0b1120; border: 1px solid var(--border); padding: 2px 6px; border-radius: 3px}
+
+/* ── TAB 2: DIAGNOSTICS & SBAR ── */
+.diag-grid{
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  padding: 14px 24px;
+  max-width: 1560px;
+  margin: auto;
+}
+@media(max-width:960px){.diag-grid{grid-template-columns: 1fr}}
+
+.symptom-deck{
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+  margin: 10px 0;
+}
+.symptom-check{
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: #060a14;
+  border: 1px solid var(--border);
+  padding: 6px 10px;
+  border-radius: 3px;
+  font-size: 11px;
+  cursor: pointer;
+}
+.drop-inspection-box{
+  border: 1px dashed #263857;
+  border-radius: 4px;
+  padding: 14px;
+  text-align: center;
+  background: #050812;
+  margin-top: 8px;
+}
+.sbar-output-card{
+  background: #070c18;
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--amber);
+  border-radius: 4px;
+  padding: 12px;
+  margin-top: 10px;
+  font-size: 11px;
+  line-height: 1.6;
+}
+
+/* ── TAB 3: NASA HRP EVIDENCE LIBRARY ── */
+.evidence-workspace{
+  padding: 14px 24px;
+  max-width: 1560px;
+  margin: auto;
+}
+.evidence-dossier-grid{
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: 12px;
+  margin-top: 12px;
+}
+.dossier-card{
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  padding: 14px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+.dossier-card:hover{border-color: #38bdf8; background: var(--panel-hover)}
+.dossier-code{
+  font-family: "JetBrains Mono", monospace;
+  font-size: 10px;
+  font-weight: 700;
+  color: #38bdf8;
+  margin-bottom: 4px;
+}
+.dossier-title{font-size: 12px; font-weight: 700; color: #fff; margin-bottom: 6px}
+.dossier-summary{font-size: 11px; color: var(--text-muted); line-height: 1.5; margin-bottom: 8px}
+.dossier-source{
+  font-family: "JetBrains Mono", monospace;
+  font-size: 9.5px;
+  color: var(--text-muted);
+  border-top: 1px solid var(--border);
+  padding-top: 6px;
+}
+
+/* ── TAB 4: FLIGHT SURGEON MATRIX ── */
+.surgeon-view{
+  padding: 14px 24px;
+  max-width: 1560px;
+  margin: auto;
+}
+.matrix-crew-grid{
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 12px;
+  margin-top: 12px;
+}
+.surgeon-crew-card{
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  padding: 14px;
+}
+.crew-stats-table{
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px;
+  margin-top: 10px;
+  font-family: "JetBrains Mono", monospace;
+  font-size: 10px;
+}
+.stat-cell{
+  background: #060a14;
+  border: 1px solid var(--border);
+  padding: 5px 8px;
+  border-radius: 3px;
+}
+
+/* ── TAB 5: ADVANCED CLINICAL BIO-ANALYTICS ── */
+.analytics-view{
+  padding: 14px 24px;
+  max-width: 1560px;
+  margin: auto;
+}
+.analytics-metric-deck{
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 12px;
+  margin-top: 12px;
+}
+.analytic-tile{
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  padding: 14px;
+}
+.analytic-tile-lbl{
+  font-family: "JetBrains Mono", monospace;
+  font-size: 10px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+}
+.analytic-tile-val{
+  font-family: "JetBrains Mono", monospace;
+  font-size: 22px;
+  font-weight: 700;
+  color: #fff;
+  margin: 4px 0;
+}
+.analytic-tile-desc{font-size: 11px; color: var(--text-muted)}
+
+/* ── MODALS (REGISTRATION & DETAIL) ── */
+.modal-layer{
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.8);
+  backdrop-filter: blur(4px);
+  z-index: 300;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+.modal-layer.open{display: flex}
+.modal-window{
+  background: #0c1322;
+  border: 1px solid #38bdf8;
+  border-radius: 6px;
+  max-width: 580px;
+  width: 100%;
+  padding: 22px;
+  position: relative;
+  max-height: 88vh;
+  overflow-y: auto;
+}
+.modal-close-btn{
+  position: absolute;
+  top: 14px;
+  right: 16px;
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  font-size: 18px;
+  cursor: pointer;
+}
+.form-group{
+  margin-bottom: 12px;
+}
+.form-label{
+  display: block;
+  font-size: 11px;
+  font-weight: 600;
+  margin-bottom: 4px;
+  color: var(--text-muted);
+  font-family: "JetBrains Mono", monospace;
+}
+.form-control{
+  width: 100%;
+  background: #060912;
+  border: 1px solid var(--border);
+  color: #fff;
+  padding: 7px 10px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-family: inherit;
+}
+.form-control:focus{
+  outline: none;
+  border-color: #38bdf8;
+}
+
+/* ── CREW SELECTOR PILL IN HEADER (REPLACES CLUTTERED DECK) ── */
+.crew-shutter-toggle{
+  background: #1a2436;
+  border: 1px solid rgba(56, 189, 248, 0.3);
+  border-radius: 6px;
+  padding: 5px 12px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: left;
+}
+.crew-shutter-toggle:hover{
+  background: #202c42;
+  border-color: var(--cyan);
+}
+.crew-pill-avatar{
+  font-family: "JetBrains Mono", monospace;
+  font-size: 11px;
+  font-weight: 700;
+  background: #0f172a;
+  color: var(--cyan);
+  padding: 3px 6px;
+  border-radius: 4px;
+  border: 1px solid rgba(56, 189, 248, 0.3);
+}
+.crew-pill-details{
+  display: flex;
+  flex-direction: column;
+}
+.crew-pill-label{
+  font-size: 9px;
+  font-weight: 700;
+  color: var(--text-muted);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  line-height: 1;
+}
+.crew-pill-name{
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #fff;
+  line-height: 1.2;
+}
+.crew-pill-role{
+  font-size: 11px;
+  color: var(--text-muted);
+  padding-left: 8px;
+  border-left: 1px solid var(--border);
+}
+.crew-pill-chevron{
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--cyan);
+  background: rgba(56, 189, 248, 0.1);
+  padding: 3px 8px;
+  border-radius: 4px;
+}
+
+/* ── CREW SIDE SHUTTER (DRAWER) ── */
+.crew-shutter-backdrop{
+  position: fixed;
+  inset: 0;
+  background: rgba(10, 15, 25, 0.65);
+  backdrop-filter: blur(3px);
+  z-index: 1000;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease;
+}
+.crew-shutter-backdrop.open{
+  opacity: 1;
+  pointer-events: auto;
+}
+.crew-side-shutter{
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 380px;
+  max-width: 90vw;
+  background: #131a27;
+  border-left: 1px solid rgba(148, 163, 184, 0.16);
+  box-shadow: -8px 0 24px rgba(0, 0, 0, 0.45);
+  z-index: 1001;
+  display: flex;
+  flex-direction: column;
+  transform: translateX(100%);
+  transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.crew-side-shutter.open{
+  transform: translateX(0);
+}
+.shutter-header{
+  padding: 16px 18px;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.12);
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  background: #172132;
+}
+.shutter-tag{
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9.5px;
+  font-weight: 700;
+  color: var(--cyan);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+.shutter-title{
+  font-size: 15px;
+  font-weight: 700;
+  color: #fff;
+  margin-top: 2px;
+}
+.shutter-sub{
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-top: 1px;
+}
+.shutter-close-btn{
+  background: transparent;
+  border: 1px solid rgba(148, 163, 184, 0.25);
+  color: var(--text-muted);
+  width: 28px;
+  height: 28px;
+  border-radius: 4px;
+  font-size: 18px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s ease;
+}
+.shutter-close-btn:hover{
+  color: #fff;
+  border-color: #fff;
+}
+.shutter-body{
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.shutter-section-label{
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+.crew-roster-vertical{
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.crew-item-card{
+  background: #172132;
+  border: 1px solid rgba(148, 163, 184, 0.14);
+  border-radius: 6px;
+  padding: 10px 12px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  transition: all 0.18s ease;
+}
+.crew-item-card:hover{
+  background: #1d293d;
+  border-color: rgba(56, 189, 248, 0.4);
+}
+.crew-item-card.active{
+  background: #1d293d;
+  border-color: var(--cyan);
+  box-shadow: inset 3px 0 0 var(--cyan);
+}
+.crew-item-tag{
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  font-weight: 700;
+  background: #101622;
+  color: var(--cyan);
+  padding: 4px 7px;
+  border-radius: 4px;
+  border: 1px solid rgba(56, 189, 248, 0.25);
+}
+.crew-item-info{
+  flex: 1;
+  min-width: 0;
+}
+.crew-item-name{
+  font-size: 13px;
+  font-weight: 600;
+  color: #fff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.crew-item-meta{
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-top: 1px;
+}
+.crew-item-vitals-mini{
+  display: flex;
+  gap: 8px;
+  margin-top: 4px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  color: var(--text-muted);
+}
+.crew-item-vitals-mini b{
+  color: var(--text-main);
+}
+.shutter-profile-card{
+  background: #101622;
+  border: 1px solid rgba(148, 163, 184, 0.14);
+  border-radius: 6px;
+  padding: 12px 14px;
+}
+.profile-meta-grid{
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-top: 8px;
+  font-size: 11px;
+}
+.profile-meta-item{
+  color: var(--text-muted);
+}
+.profile-meta-item b{
+  color: var(--text-main);
+  display: block;
+  font-size: 12px;
+}
+.shutter-enlist-btn{
+  width: 100%;
+  padding: 10px;
+  text-align: center;
+  margin-top: auto;
+}
+
+/* ── DATA PROVENANCE BADGES ── */
+.prov-badge{
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 8.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  padding: 2px 6px;
+  border-radius: 3px;
+  line-height: 1.2;
+}
+.prov-verified{
+  background: rgba(34, 197, 94, 0.12);
+  color: #22c55e;
+  border: 1px solid rgba(34, 197, 94, 0.35);
+}
+.prov-telemetry{
+  background: rgba(56, 189, 248, 0.12);
+  color: #38bdf8;
+  border: 1px solid rgba(56, 189, 248, 0.35);
+}
+.prov-manual{
+  background: rgba(168, 85, 247, 0.12);
+  color: #c084fc;
+  border: 1px solid rgba(168, 85, 247, 0.35);
+}
+.prov-synthetic{
+  background: rgba(245, 158, 11, 0.12);
+  color: #f59e0b;
+  border: 1px solid rgba(245, 158, 11, 0.35);
+}
+.prov-exploratory{
+  background: rgba(244, 63, 94, 0.12);
+  color: #fb7185;
+  border: 1px solid rgba(244, 63, 94, 0.35);
+}
+
+
+.panel-badge {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--cyan);
+  background: #101622;
+  padding: 2px 6px;
+  border-radius: 3px;
+  border: 1px solid rgba(56,189,248,0.25);
+}
+.sym-input {
+  accent-color: var(--cyan);
+  cursor: pointer;
+}
+.telemetry-log-box {
+  background: #0d121c;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 8px 10px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10.5px;
+  max-height: 140px;
+  overflow-y: auto;
+}
+
+
+
+/* Small interface refinements: keep the existing layout and mission workflow. */
+:root {
+  --bg: #0d1420;
+  --surface: #121b2a;
+  --panel: #182437;
+  --panel-hover: #1d2b40;
+  --card: #1a273a;
+  --border: rgba(148, 163, 184, 0.18);
+  --border-focus: #49a9df;
+  --blue: #2588bd;
+  --cyan: #54b5df;
+}
+body { font-size: 13px; line-height: 1.55; }
+.top-header { padding: 12px 20px; }
+.crew-deck { padding: 9px 20px; }
+.nav-tab-strip { padding: 0 20px; }
+.tab-btn { font-family: inherit; font-size: 12px; letter-spacing: 0; padding: 11px 16px; }
+.panel-box { border-radius: 8px; padding: 15px; }
+.panel-head { margin-bottom: 12px; padding-bottom: 8px; }
+.panel-title { font-family: inherit; font-size: 11px; letter-spacing: .45px; }
+.panel-tag { font-size: 10px; }
+.crew-card-tab { border-radius: 7px; }
+.crew-card-tab.active { background: #14263b; }
+.btn-primary, .btn-secondary, .btn-danger { border-radius: 6px; }
+.ctl-select, .ctl-input { border-radius: 6px; }
+.ecg-box, .anatomy-viewport { border-radius: 6px; }
+.layer-btn { border-radius: 5px; }
+/* Keep focus visible for keyboard navigation. */
+button:focus-visible, select:focus-visible, input:focus-visible, [tabindex]:focus-visible {
+  outline: 2px solid var(--cyan);
+  outline-offset: 2px;
+}
+@media (max-width: 700px) {
+  .top-header, .crew-deck { padding-left: 12px; padding-right: 12px; }
+  .nav-tab-strip { padding: 0 8px; overflow-x: auto; }
+  .tab-btn { white-space: nowrap; }
+  .flight-deck-grid { padding: 10px 12px; gap: 10px; }
+}
+
+</style>
+</head>
+<body>
+
+<!-- ── TOP MISSION CONTROL HEADER ── -->
+<header class="top-header">
+  <div class="brand-block">
+    <div class="mission-badge">NASA / HRP-EXMC</div>
+    <div>
+      <div class="brand-name">AstroGuard <span>· Bio-Astronautics Operational Platform</span></div>
+      <div class="telemetry-clocks">
+        <span>MISSION CLOCK: <b id="met-clock">MET: +184d 08h 22m 14s</b></span>
+        <span>UTC: <b id="utc-clock">--:--:-- UTC</b></span>
+      </div>
+    </div>
+  </div>
+
+  <div class="header-actions">
+    <!-- Sleek Crew Selector Pill (Opens Side Shutter) -->
+    <button class="crew-shutter-toggle" id="btn-toggle-crew-shutter" title="Toggle Crew Roster & Profiles">
+      <span class="crew-pill-avatar" id="header-crew-avatar">CDR-01</span>
+      <div class="crew-pill-details">
+        <span class="crew-pill-label">Active Astronaut</span>
+        <span class="crew-pill-name" id="header-crew-name">Commander Sarah Chen</span>
+      </div>
+      <span class="crew-pill-role" id="header-crew-role">Commander · O+</span>
+      <span class="crew-pill-chevron">☰ Crew Roster</span>
+    </button>
+    <div class="telemetry-clocks" style="align-items:center">
+      <span>ENV:</span>
+      <select id="env-select" class="ctl-select"></select>
+    </div>
+
+    <div class="telemetry-clocks" style="align-items:center">
+      <span>COMMS LAG:</span>
+      <input type="range" id="lag-range" min="0" max="22" step="1" value="0" style="width:65px">
+      <span id="lag-indicator" style="color:#38bdf8;font-weight:700">0m</span>
+    </div>
+
+    <button class="btn-secondary" id="btn-open-problem-modal" style="color:#38bdf8;border-color:rgba(56,189,248,0.4)">[Problem Statement & Mission Scope]</button>
+    <button class="btn-danger" id="btn-spe-trigger">SPE Flare Event</button>
+    <button class="btn-secondary" id="btn-offline-toggle">Uplink: Online</button>
+
+    <div style="background:#050913;border:1px solid var(--border);padding:3px 10px;border-radius:4px;display:flex;align-items:center;gap:8px">
+      <div style="font-size:9.5px;color:var(--text-muted);text-transform:uppercase;line-height:1.1">Flight<br>Readiness</div>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:18px;font-weight:700;color:var(--green)" id="crew-readiness-index">94</div>
+    </div>
+  </div>
+</header>
+
+<!-- ── CRITICAL SPE BANNER ── -->
+<div id="spe-emergency-bar">
+  [CRITICAL ALERT 001-SPE] SOLAR PARTICLE EVENT FLUX TRIGGER: Real-time silicon dosimeter exceeds 10.0 mSv/hr. Retreat to Core Water-Shielded Habitat Corridor immediately.
+</div>
+
+<!-- ── CREW SIDE SHUTTER (SLIDING DRAWER) ── -->
+<div id="crew-shutter-backdrop" class="crew-shutter-backdrop"></div>
+<aside id="crew-side-shutter" class="crew-side-shutter">
+  <div class="shutter-header">
+    <div>
+      <div class="shutter-tag">MISSION CREW ROSTER</div>
+      <div class="shutter-title">Expedition 72 Personnel</div>
+      <div class="shutter-sub">Select an astronaut to calibrate telemetry and digital twin</div>
+    </div>
+    <button class="shutter-close-btn" id="btn-close-crew-shutter" title="Close Panel">&times;</button>
+  </div>
+
+  <div class="shutter-body">
+    <div class="shutter-section-label">ASSIGNED ASTRONAUTS (<span id="shutter-crew-count">4</span>)</div>
+    <div class="crew-roster-vertical" id="crew-roster-list"></div>
+
+    <div class="shutter-profile-card" id="shutter-selected-profile"></div>
+
+    <button class="btn-primary shutter-enlist-btn" id="btn-open-enlist-modal">
+      + Enlist New Crew Member
+    </button>
+  </div>
+</aside>
+
+<!-- ── MAIN NAV TABS ── -->
+<nav class="nav-tab-strip">
+  <div class="tab-btn active" data-tab="flight-deck">[1] Biometric Flight Deck & Digital Twin</div>
+  <div class="tab-btn" data-tab="diagnostics">[2] Clinical Assessment & SBAR Triage</div>
+  <div class="tab-btn" data-tab="analytics">[3] Advanced Bio-Analytics & ICP</div>
+  <div class="tab-btn" data-tab="evidence">[4] NASA HRP Evidence Dossiers</div>
+  <div class="tab-btn" data-tab="astrocare-roadmap">[6] ASTROCARE Project Roadmap</div>
+  <div class="tab-btn" data-tab="ground-matrix">[5] Flight Surgeon Ground Deck</div>
+</nav>
+
+<!-- ══════════════ TAB 1: FLIGHT DECK & DIGITAL TWIN ══════════════ -->
+<div class="tab-view active" id="tab-flight-deck">
+  <main class="flight-deck-grid">
+    <!-- LEFT: Digital Twin Anatomy -->
+    <div class="panel-box">
+      <div class="panel-head">
+        <span class="panel-title">Anatomical Digital Twin</span>
+        <span class="panel-badge" id="active-astronaut-tag">CDR-01</span>
+      </div>
+
+      <div class="ecg-box">
+        <div class="ecg-title">ECG LEAD-II REAL-TIME TELEMETRY</div>
+        <canvas id="ecg-canvas" height="42"></canvas>
+      </div>
+
+      <div class="anatomy-viewport">
+        <div class="layer-toggles">
+          <button class="layer-btn active" data-layer="all">All Systems</button>
+          <button class="layer-btn" data-layer="neuro">Neuro-Ocular</button>
+          <button class="layer-btn" data-layer="cardio">Cardiovascular</button>
+          <button class="layer-btn" data-layer="skeletal">Skeletal</button>
+        </div>
+
+        <svg id="anatomy-svg" viewBox="0 0 200 400" role="group" aria-label="Anatomical Digital Twin">
+          <defs>
+            <linearGradient id="body-grad" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0" style="stop-color:#131c2e"/>
+              <stop offset="1" style="stop-color:#070b14"/>
+            </linearGradient>
+            <path id="body-half" d="M100 72C116 72 134 76 145 86C154 94 158 118 160 148L165 204C166 214 152 216 151 206L145 158C143 140 141 128 138 118C139 150 137 178 133 202C136 222 135 238 131 256L125 346L127 376C129 388 108 390 108 380L105 270C103 262 101 258 100 256"/>
+          </defs>
+          <g>
+            <rect class="sil-layer" x="92" y="58" width="16" height="22" rx="6"/>
+            <ellipse class="sil-layer" cx="100" cy="40" rx="20" ry="24"/>
+            <use href="#body-half" class="sil-layer"/>
+            <use href="#body-half" class="sil-layer" transform="translate(200,0) scale(-1,1)"/>
+            <ellipse class="sil-outline" cx="100" cy="40" rx="20" ry="24"/>
+            <use href="#body-half" class="sil-outline"/>
+            <use href="#body-half" class="sil-outline" transform="translate(200,0) scale(-1,1)"/>
+            <path class="sil-outline" d="M88 76Q100 86 112 76"/>
+          </g>
+          <g id="dynamic-organs"></g>
+          <g id="hotspot-nodes"></g>
+        </svg>
+      </div>
+
+      <div class="callout-deck" id="callouts-container"></div>
+    </div>
+
+    <!-- CENTER: Physiological Channels & Protocols -->
+    <div class="panel-box">
+      <div class="panel-head">
+        <span class="panel-title" id="organ-focus-name">Cardiovascular Telemetry</span>
+        <span class="panel-badge" id="organ-focus-hazard">HAZARD: GRAVITY FIELDS</span>
+      </div>
+
+      <div class="vitals-stack" id="vitals-stack-container"></div>
+
+      <div class="clinical-memo">
+        <div class="memo-head">
+          <span>Physiological Spaceflight Rationale</span>
+          <span>NASA-HRP-701</span>
+        </div>
+        <div class="memo-body" id="organ-rationale-display"></div>
+      </div>
+
+      <div class="panel-head" style="margin-top:14px">
+        <span class="panel-title">Prescribed Countermeasure Protocols</span>
+        <span class="panel-badge">CLINICAL PRACTICE</span>
+      </div>
+      <div id="countermeasures-deck"></div>
+    </div>
+
+    <!-- RIGHT: Hazards Radar & Telemetry Handoff -->
+    <div>
+      <div class="panel-box">
+        <div class="panel-head">
+          <span class="panel-title">NASA 5-Hazards Radar</span>
+          <span class="panel-badge">PENTAGON INDEX</span>
+        </div>
+        <div class="radar-container">
+          <svg id="radar-svg" viewBox="0 0 300 270" role="img" aria-label="Hazards Pentagon"></svg>
+          <div class="radar-stats" id="radar-stat-tags"></div>
+        </div>
+      </div>
+
+      <div class="panel-box" style="margin-top:14px">
+        <div class="panel-head">
+          <span class="panel-title">Ground Telemetry Uplink</span>
+          <span class="panel-badge">HOUSTON MCC</span>
+        </div>
+        <button class="btn-primary" id="btn-transmit-sbar" style="width:100%;margin-bottom:8px">
+          Transmit Clinical SBAR Packet
+        </button>
+        <div class="telemetry-log-box" style="background:#02050c;padding:8px;border:1px solid var(--border);border-radius:4px;font-family:'JetBrains Mono',monospace;font-size:10px;max-height:140px;overflow-y:auto" id="comms-log">
+          <div>[LINK ONLINE] Primary telemetry carrier locked to Deep Space Network.</div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- ══════════════ TAB 2: DIAGNOSTICS & SBAR TRIAGE ══════════════ -->
+<div class="tab-view" id="tab-diagnostics">
+  <div class="diag-grid">
+    <div class="panel-box">
+      <div class="panel-head">
+        <span class="panel-title">1. Structured Symptoms Checklist</span>
+        <span class="panel-badge">CREW INPUT</span>
+      </div>
+      <div class="symptom-deck">
+        <label class="symptom-check"><input type="checkbox" value="SANS Retinal Distortion" class="sym-input"> SANS Retinal Distortion</label>
+        <label class="symptom-check"><input type="checkbox" value="Cephalad Fluid Shifting" class="sym-input"> Cephalad Fluid Shifting</label>
+        <label class="symptom-check"><input type="checkbox" value="Orthostatic Pre-Syncope" class="sym-input"> Orthostatic Pre-Syncope</label>
+        <label class="symptom-check"><input type="checkbox" value="Sleep Curtailment <6h" class="sym-input"> Sleep Curtailment &lt;6h</label>
+        <label class="symptom-check"><input type="checkbox" value="Axial Spine Elongation Pain" class="sym-input"> Axial Spine Elongation Pain</label>
+        <label class="symptom-check"><input type="checkbox" value="Space Motion Nausea" class="sym-input"> Space Motion Nausea</label>
+        <label class="symptom-check"><input type="checkbox" value="Cutaneous Erythema / Rash" class="sym-input"> Cutaneous Erythema / Rash</label>
+        <label class="symptom-check"><input type="checkbox" value="Dosimeter Telemetry Spike" class="sym-input"> Dosimeter Telemetry Spike</label>
+      </div>
+
+      <div class="panel-head" style="margin-top:16px">
+        <span class="panel-title">2. Diagnostic Ultrasound & Optical Fundoscopy</span>
+        <span class="panel-badge">MULTI-SPECTRAL</span>
+      </div>
+      <div class="drop-inspection-box">
+        <input type="file" id="scan-file-selector" accept="image/*" style="font-size:11px;margin-bottom:6px">
+        <div style="font-size:10px;color:var(--text-muted)">Optical coherence tomography (OCT) retina scans, ONSD ultrasound, or dermatological photographs.</div>
+        <div id="scan-preview-wrapper" style="display:none;margin-top:8px;text-align:left;background:#03060f;padding:10px;border-radius:4px;border:1px solid var(--border)">
+          <img id="scan-image-elem" src="" style="max-height:110px;border-radius:3px;display:block;margin-bottom:6px">
+          <div id="scan-classifier-output" style="font-family:'JetBrains Mono',monospace;font-size:10px;color:#38bdf8"></div>
+        </div>
+      </div>
+
+      <button class="btn-primary" id="btn-run-full-assessment" style="width:100%;margin-top:14px;padding:9px">
+        Execute Integrated Bio-Medical Diagnostic Evaluation
+      </button>
+    </div>
+
+    <div class="panel-box">
+      <div class="panel-head">
+        <span class="panel-title">Clinical Decision Output</span>
+        <span class="panel-badge" id="eval-status-badge">STATUS: STANDBY</span>
+      </div>
+
+      <div id="eval-execution-trace" style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text-muted);margin-bottom:10px;line-height:1.6">
+        <div>[IDLE] Awaiting clinical diagnostic pipeline execution for current crew member.</div>
+      </div>
+
+      <div id="eval-findings-container"></div>
+
+      <div class="sbar-output-card" id="sbar-card-box" style="display:none">
+        <div style="font-weight:700;color:var(--amber);margin-bottom:4px;font-family:'JetBrains Mono',monospace">
+          CLINICAL SBAR GROUND TELEMETRY HANDOFF
+        </div>
+        <div id="sbar-text-content"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ TAB 3: ADVANCED BIO-ANALYTICS ══════════════ -->
+<div class="tab-view" id="tab-analytics">
+  <div class="analytics-view">
+    <div class="panel-head">
+      <div>
+        <span class="panel-title" style="font-size:13px;color:#fff">Advanced Bio-Astronautics Hemodynamic & Physiological Analytics</span>
+        <div style="font-size:10px;color:var(--text-muted)">Real-time computation of Intracranial Pressure (eICP), Mean Arterial Pressure (MAP), and Calcium Nephrolithiasis Risk.</div>
+      </div>
+      <button class="btn-secondary" id="btn-export-analytics-json">Export Analytics Data (.json)</button>
+    </div>
+
+    <div class="analytics-metric-deck" id="analytics-deck"></div>
+  </div>
+</div>
+
+<!-- ══════════════ TAB 4: NASA HRP EVIDENCE LIBRARY ══════════════ -->
+<div class="tab-view" id="tab-evidence">
+  <div class="evidence-workspace">
+    <div class="panel-head">
+      <div>
+        <span class="panel-title" style="font-size:13px;color:#fff">NASA Human Research Program (HRP) Evidence Dossiers</span>
+        <div style="font-size:10px;color:var(--text-muted)">Directly indexed from NASA Human Research Roadmap, Canadian Space Agency (CSA), and ESA space medicine archives.</div>
+      </div>
+      <button class="btn-secondary" id="btn-sync-evidence">Sync Scraped Evidence</button>
+    </div>
+
+    <div style="display:flex;gap:10px;margin-top:12px;flex-wrap:wrap">
+      <input type="text" id="evidence-filter-input" placeholder="Search investigations (e.g. SANS, Radiation, ARED, Bone Loss, Orthostatic)..." class="ctl-input" style="flex:1;min-width:260px">
+      <select id="evidence-category-select" class="ctl-select">
+        <option value="">All 5 Spaceflight Hazards</option>
+        <option value="Space Radiation">Space Radiation</option>
+        <option value="Gravity Fields">Gravity Fields</option>
+        <option value="Isolation and Confinement">Isolation & Confinement</option>
+        <option value="Distance from Earth">Distance from Earth</option>
+        <option value="Hostile/Closed Environments">Hostile / Closed Environments</option>
+      </select>
+    </div>
+
+    <div class="evidence-dossier-grid" id="dossiers-grid-container"></div>
+  </div>
+</div>
+
+<!-- ══════════════ TAB 5: FLIGHT SURGEON MATRIX ══════════════ -->
+<div class="tab-view" id="tab-ground-matrix">
+  <div class="surgeon-view">
+    <div class="panel-head">
+      <div>
+        <span class="panel-title" style="font-size:13px;color:#fff">Houston Mission Control Flight Surgeon Roster</span>
+        <div style="font-size:10px;color:var(--text-muted)">Live Houston MCC multi-crew comparison matrix · Expedition 72 (Mars Transit Phase)</div>
+      </div>
+      <button class="btn-primary" id="btn-export-clinical-log">Export Comprehensive Flight Medical Log (.txt)</button>
+    </div>
+
+    <div class="matrix-crew-grid" id="matrix-crew-container"></div>
+
+    <div class="panel-box" style="margin-top:14px">
+      <div class="panel-head">
+        <span class="panel-title">Active Flight Medical Incident Log</span>
+        <span class="panel-badge">INCIDENT STREAM</span>
+      </div>
+      <div id="flight-incident-stream"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ TAB 6: ASTROCARE ROADMAP ══════════════ -->
+<div class="tab-view" id="tab-astrocare-roadmap" style="padding:28px 24px;max-width:1100px;margin:0 auto">
+
+  <div style="border-bottom:1px solid var(--border);padding-bottom:18px;margin-bottom:28px">
+    <div style="font-size:11px;color:var(--cyan);text-transform:uppercase;letter-spacing:.12em;margin-bottom:6px">Project Vision</div>
+    <div style="font-size:26px;font-weight:700;color:#fff;letter-spacing:-.01em">ASTROCARE</div>
+    <div style="font-size:14px;color:var(--text-muted);margin-top:4px;font-style:italic">Beyond Earth. Beyond Limits. Better Human Health.</div>
+  </div>
+
+  <!-- WHAT IS ASTROCARE -->
+  <section style="margin-bottom:32px">
+    <div class="panel-head"><span class="panel-title">What is ASTROCARE?</span></div>
+    <div class="panel-box" style="padding:18px 20px">
+      <p style="color:var(--text-main);line-height:1.75;margin-bottom:14px">
+        ASTROCARE is an <strong style="color:var(--cyan)">AI-assisted astronaut health monitoring platform</strong>
+        designed to support crew health assessment during space missions.
+      </p>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px">
+        <div style="background:#0d1626;border:1px solid var(--border);border-radius:6px;padding:14px">
+          <div style="color:var(--cyan);font-size:11px;text-transform:uppercase;letter-spacing:.1em;margin-bottom:6px">01</div>
+          <div style="color:#fff;font-weight:600;font-size:13px">Collect Health Data</div>
+          <div style="color:var(--text-muted);font-size:11px;margin-top:4px">جمع البيانات الصحية</div>
+        </div>
+        <div style="background:#0d1626;border:1px solid var(--border);border-radius:6px;padding:14px">
+          <div style="color:var(--cyan);font-size:11px;text-transform:uppercase;letter-spacing:.1em;margin-bottom:6px">02</div>
+          <div style="color:#fff;font-weight:600;font-size:13px">Monitor Health</div>
+          <div style="color:var(--text-muted);font-size:11px;margin-top:4px">متابعة المؤشرات الصحية</div>
+        </div>
+        <div style="background:#0d1626;border:1px solid var(--border);border-radius:6px;padding:14px">
+          <div style="color:var(--cyan);font-size:11px;text-transform:uppercase;letter-spacing:.1em;margin-bottom:6px">03</div>
+          <div style="color:#fff;font-weight:600;font-size:13px">Analyze Health Trends</div>
+          <div style="color:var(--text-muted);font-size:11px;margin-top:4px">تحليل التغيرات الصحية</div>
+        </div>
+        <div style="background:#0d1626;border:1px solid var(--border);border-radius:6px;padding:14px">
+          <div style="color:var(--amber);font-size:11px;text-transform:uppercase;letter-spacing:.1em;margin-bottom:6px">04</div>
+          <div style="color:#fff;font-weight:600;font-size:13px">Detect Anomalies</div>
+          <div style="color:var(--text-muted);font-size:11px;margin-top:4px">اكتشاف الأنماط غير المعتادة</div>
+        </div>
+        <div style="background:#0d1626;border:1px solid var(--border);border-radius:6px;padding:14px">
+          <div style="color:var(--green);font-size:11px;text-transform:uppercase;letter-spacing:.1em;margin-bottom:6px">05</div>
+          <div style="color:#fff;font-weight:600;font-size:13px">Support Medical Decisions</div>
+          <div style="color:var(--text-muted);font-size:11px;margin-top:4px">مساعدة الطاقم الطبي</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PROBLEM STATEMENT -->
+  <section style="margin-bottom:32px">
+    <div class="panel-head"><span class="panel-title">The Problem ASTROCARE Solves</span><span class="panel-badge">NASA HRP Classified</span></div>
+    <div class="panel-box" style="padding:18px 20px">
+      <p style="color:var(--text-muted);font-size:12px;margin-bottom:16px">
+        Space missions expose the human body to conditions fundamentally different from life on Earth. NASA classifies these under the Human Research Program (HRP):
+      </p>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px;margin-bottom:16px">
+        <div style="display:flex;align-items:flex-start;gap:10px;padding:12px;background:#0a1020;border-left:3px solid var(--cyan);border-radius:4px">
+          <div><div style="color:#fff;font-size:12px;font-weight:600">Microgravity</div><div style="color:var(--text-muted);font-size:11px;margin-top:2px">Fluid shifts, cardiovascular deconditioning, SANS risk in &gt;70% of crew</div></div>
+        </div>
+        <div style="display:flex;align-items:flex-start;gap:10px;padding:12px;background:#0a1020;border-left:3px solid var(--amber);border-radius:4px">
+          <div><div style="color:#fff;font-size:12px;font-weight:600">Space Radiation</div><div style="color:var(--text-muted);font-size:11px;margin-top:2px">GCR &amp; SPE DNA damage, cancer risk, acute radiation syndrome</div></div>
+        </div>
+        <div style="display:flex;align-items:flex-start;gap:10px;padding:12px;background:#0a1020;border-left:3px solid var(--green);border-radius:4px">
+          <div><div style="color:#fff;font-size:12px;font-weight:600">Isolation &amp; Confinement</div><div style="color:var(--text-muted);font-size:11px;margin-top:2px">Psychological stress, circadian disruption, cognitive degradation</div></div>
+        </div>
+        <div style="display:flex;align-items:flex-start;gap:10px;padding:12px;background:#0a1020;border-left:3px solid #a855f7;border-radius:4px">
+          <div><div style="color:#fff;font-size:12px;font-weight:600">Sleep Disruption</div><div style="color:var(--text-muted);font-size:11px;margin-top:2px">Circadian rhythm misalignment, performance impairment</div></div>
+        </div>
+        <div style="display:flex;align-items:flex-start;gap:10px;padding:12px;background:#0a1020;border-left:3px solid #ef4444;border-radius:4px">
+          <div><div style="color:#fff;font-size:12px;font-weight:600">Limited Medical Support</div><div style="color:var(--text-muted);font-size:11px;margin-top:2px">4-24 min radio latency to Earth, up to 14-day blackouts during solar conjunction</div></div>
+        </div>
+      </div>
+      <div style="background:#0d1f10;border:1px solid rgba(74,222,128,.2);border-radius:6px;padding:12px;font-size:12px;color:var(--text-muted)">
+        <strong style="color:var(--green)">ASTROCARE's Differentiator:</strong> We don't just display health values — we <em>correlate them with mission conditions</em> and track their changes over time, enabling truly autonomous clinical decision support.
+        <br><span style="color:var(--text-muted);font-size:10px;margin-top:4px;display:block">Source: NASA Human Research Program – Spaceflight Risks</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- TARGET USERS -->
+  <section style="margin-bottom:32px">
+    <div class="panel-head"><span class="panel-title">Target Users &amp; Role-Based Access</span></div>
+    <div class="panel-box" style="padding:18px 20px">
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px">
+        <div style="background:#0d1626;border:1px solid rgba(56,189,248,.25);border-radius:8px;padding:16px;text-align:center">
+          <div style="font-size:28px;margin-bottom:8px">&#9651;</div>
+          <div style="color:var(--cyan);font-size:13px;font-weight:700;margin-bottom:4px">Astronaut</div>
+          <div style="color:var(--text-muted);font-size:11px;line-height:1.6">Input &amp; monitor personal health data. View own biometric telemetry and wellness trends.</div>
+        </div>
+        <div style="background:#0d1626;border:1px solid rgba(74,222,128,.25);border-radius:8px;padding:16px;text-align:center">
+          <div style="font-size:28px;margin-bottom:8px">&#9651;</div>
+          <div style="color:var(--green);font-size:13px;font-weight:700;margin-bottom:4px">Flight Surgeon</div>
+          <div style="color:var(--text-muted);font-size:11px;line-height:1.6">Review all crew reports, clinical alerts, SBAR telemetry, and authorize medical interventions.</div>
+        </div>
+        <div style="background:#0d1626;border:1px solid rgba(251,191,36,.25);border-radius:8px;padding:16px;text-align:center">
+          <div style="font-size:28px;margin-bottom:8px">&#9651;</div>
+          <div style="color:var(--amber);font-size:13px;font-weight:700;margin-bottom:4px">Mission Control</div>
+          <div style="color:var(--text-muted);font-size:11px;line-height:1.6">Monitor crew health summaries within granted access scope. Coordinate emergency response.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 8 MODULES -->
+  <section style="margin-bottom:32px">
+    <div class="panel-head"><span class="panel-title">Application Modules — 8 Core Sections</span></div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px">
+      <div class="panel-box" style="padding:16px">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
+          <div style="width:28px;height:28px;border-radius:50%;background:rgba(56,189,248,.15);border:1px solid var(--cyan);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:var(--cyan)">1</div>
+          <div style="color:#fff;font-weight:600;font-size:13px">Mission Control Dashboard</div>
+        </div>
+        <div style="color:var(--text-muted);font-size:11px;line-height:1.65">Astronaut Profile, Mission Duration, Health Overview (HR, SpO2, BP, Sleep, Activity), Health Trend Indicators (7-day), Mission Timeline, Health Summary.</div>
+      </div>
+      <div class="panel-box" style="padding:16px">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
+          <div style="width:28px;height:28px;border-radius:50%;background:rgba(56,189,248,.15);border:1px solid var(--cyan);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:var(--cyan)">2</div>
+          <div style="color:#fff;font-weight:600;font-size:13px">Digital Twin</div>
+        </div>
+        <div style="color:var(--text-muted);font-size:11px;line-height:1.65">Interactive 2D (evolving to 3D) physiological model. Clickable body regions: Cardiovascular, Musculoskeletal, Respiratory, Nervous System, Visual System. Live data reflection.</div>
+      </div>
+      <div class="panel-box" style="padding:16px">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
+          <div style="width:28px;height:28px;border-radius:50%;background:rgba(74,222,128,.15);border:1px solid var(--green);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:var(--green)">3</div>
+          <div style="color:#fff;font-weight:600;font-size:13px">AI Health Analytics</div>
+        </div>
+        <div style="color:var(--text-muted);font-size:11px;line-height:1.65">Isolation Forest anomaly detection, statistical trend analysis, historical vs. current comparison, explainable AI insights showing which indicator changed and why.</div>
+      </div>
+      <div class="panel-box" style="padding:16px">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
+          <div style="width:28px;height:28px;border-radius:50%;background:rgba(74,222,128,.15);border:1px solid var(--green);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:var(--green)">4</div>
+          <div style="color:#fff;font-weight:600;font-size:13px">Space Mission Simulator</div>
+        </div>
+        <div style="color:var(--text-muted);font-size:11px;line-height:1.65">Configure Mission Duration, Sleep Schedule, Exercise Frequency, Activity Level. View projected health trend simulations. Educational &amp; exploratory — not clinical diagnosis.</div>
+      </div>
+      <div class="panel-box" style="padding:16px">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
+          <div style="width:28px;height:28px;border-radius:50%;background:rgba(251,191,36,.15);border:1px solid var(--amber);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:var(--amber)">5</div>
+          <div style="color:#fff;font-weight:600;font-size:13px">Mental Wellness Monitoring</div>
+        </div>
+        <div style="color:var(--text-muted);font-size:11px;line-height:1.65">Daily Wellness Check: Mood (self-assessment), Stress (questionnaire), Sleep Quality, Cognitive Performance exercises, Social Isolation index. Longitudinal trend display.</div>
+      </div>
+      <div class="panel-box" style="padding:16px">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
+          <div style="width:28px;height:28px;border-radius:50%;background:rgba(251,191,36,.15);border:1px solid var(--amber);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:var(--amber)">6</div>
+          <div style="color:#fff;font-weight:600;font-size:13px">Smart Medical Assistant</div>
+        </div>
+        <div style="color:var(--text-muted);font-size:11px;line-height:1.65">LLM + RAG over NASA Research Documents. Answers: "Explain my health trends", "Why this alert?", "Summarize last 7 days". No independent medical prescriptions.</div>
+      </div>
+      <div class="panel-box" style="padding:16px">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
+          <div style="width:28px;height:28px;border-radius:50%;background:rgba(168,85,247,.15);border:1px solid #a855f7;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#a855f7">7</div>
+          <div style="color:#fff;font-weight:600;font-size:13px">Health History &amp; Reports</div>
+        </div>
+        <div style="color:var(--text-muted);font-size:11px;line-height:1.65">Daily health records, Weekly/Monthly trend reports, Alert history, PDF export with charts, annotations, and SBAR summaries for Flight Surgeon review.</div>
+      </div>
+      <div class="panel-box" style="padding:16px">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
+          <div style="width:28px;height:28px;border-radius:50%;background:rgba(168,85,247,.15);border:1px solid #a855f7;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#a855f7">8</div>
+          <div style="color:#fff;font-weight:600;font-size:13px">Offline Mode</div>
+        </div>
+        <div style="color:var(--text-muted);font-size:11px;line-height:1.65">Local SQLite database, cached NASA reference documents, full dashboard operation without uplink. Data sync upon link restoration. RBAC encryption at rest.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- HEALTH INDICATORS -->
+  <section style="margin-bottom:32px">
+    <div class="panel-head"><span class="panel-title">Health Indicators — Priority Matrix</span></div>
+    <div class="panel-box" style="padding:0;overflow:hidden">
+      <table style="width:100%;border-collapse:collapse;font-size:12px">
+        <thead>
+          <tr style="background:#0d1626;border-bottom:1px solid var(--border)">
+            <th style="padding:10px 14px;text-align:left;color:var(--cyan);text-transform:uppercase;font-size:10px;letter-spacing:.08em">Indicator</th>
+            <th style="padding:10px 14px;text-align:left;color:var(--cyan);text-transform:uppercase;font-size:10px;letter-spacing:.08em">Spaceflight Relevance</th>
+            <th style="padding:10px 14px;text-align:center;color:var(--cyan);text-transform:uppercase;font-size:10px;letter-spacing:.08em">Priority</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr style="border-bottom:1px solid rgba(255,255,255,.04)"><td style="padding:9px 14px;color:#fff">Heart Rate</td><td style="padding:9px 14px;color:var(--text-muted)">Cardiovascular monitoring</td><td style="padding:9px 14px;text-align:center"><span style="color:var(--green);font-size:10px;font-weight:700">HIGH</span></td></tr>
+          <tr style="border-bottom:1px solid rgba(255,255,255,.04)"><td style="padding:9px 14px;color:#fff">Blood Pressure</td><td style="padding:9px 14px;color:var(--text-muted)">Cardiovascular / SANS risk</td><td style="padding:9px 14px;text-align:center"><span style="color:var(--green);font-size:10px;font-weight:700">HIGH</span></td></tr>
+          <tr style="border-bottom:1px solid rgba(255,255,255,.04)"><td style="padding:9px 14px;color:#fff">SpO2</td><td style="padding:9px 14px;color:var(--text-muted)">Oxygenation monitoring</td><td style="padding:9px 14px;text-align:center"><span style="color:var(--green);font-size:10px;font-weight:700">HIGH</span></td></tr>
+          <tr style="border-bottom:1px solid rgba(255,255,255,.04)"><td style="padding:9px 14px;color:#fff">Body Temperature</td><td style="padding:9px 14px;color:var(--text-muted)">General health monitoring</td><td style="padding:9px 14px;text-align:center"><span style="color:var(--green);font-size:10px;font-weight:700">HIGH</span></td></tr>
+          <tr style="border-bottom:1px solid rgba(255,255,255,.04)"><td style="padding:9px 14px;color:#fff">Sleep Duration / Quality</td><td style="padding:9px 14px;color:var(--text-muted)">Circadian rhythm &amp; behavioral health</td><td style="padding:9px 14px;text-align:center"><span style="color:var(--green);font-size:10px;font-weight:700">HIGH</span></td></tr>
+          <tr style="border-bottom:1px solid rgba(255,255,255,.04)"><td style="padding:9px 14px;color:#fff">Physical Activity</td><td style="padding:9px 14px;color:var(--text-muted)">Musculoskeletal / bone density proxy</td><td style="padding:9px 14px;text-align:center"><span style="color:var(--green);font-size:10px;font-weight:700">HIGH</span></td></tr>
+          <tr style="border-bottom:1px solid rgba(255,255,255,.04)"><td style="padding:9px 14px;color:#fff">Vision Observations</td><td style="padding:9px 14px;color:var(--text-muted)">SANS (Spaceflight-Associated Neuro-ocular Syndrome)</td><td style="padding:9px 14px;text-align:center"><span style="color:var(--amber);font-size:10px;font-weight:700">MED</span></td></tr>
+          <tr style="border-bottom:1px solid rgba(255,255,255,.04)"><td style="padding:9px 14px;color:#fff">Mood &amp; Stress</td><td style="padding:9px 14px;color:var(--text-muted)">Behavioral health / isolation index</td><td style="padding:9px 14px;text-align:center"><span style="color:var(--amber);font-size:10px;font-weight:700">MED</span></td></tr>
+          <tr><td style="padding:9px 14px;color:#fff">Cognitive Performance</td><td style="padding:9px 14px;color:var(--text-muted)">Mental performance under mission stress</td><td style="padding:9px 14px;text-align:center"><span style="color:var(--amber);font-size:10px;font-weight:700">MED</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- TECH STACK -->
+  <section style="margin-bottom:32px">
+    <div class="panel-head"><span class="panel-title">Technology Stack</span></div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px">
+      <div style="background:#0d1626;border:1px solid var(--border);border-radius:6px;padding:12px;text-align:center">
+        <div style="color:var(--cyan);font-size:14px;font-weight:700;margin-bottom:4px">Python</div>
+        <div style="color:var(--text-muted);font-size:10px">Main Language</div>
+      </div>
+      <div style="background:#0d1626;border:1px solid var(--border);border-radius:6px;padding:12px;text-align:center">
+        <div style="color:var(--cyan);font-size:14px;font-weight:700;margin-bottom:4px">Streamlit</div>
+        <div style="color:var(--text-muted);font-size:10px">Frontend UI</div>
+      </div>
+      <div style="background:#0d1626;border:1px solid var(--border);border-radius:6px;padding:12px;text-align:center">
+        <div style="color:var(--cyan);font-size:14px;font-weight:700;margin-bottom:4px">Pandas / NumPy</div>
+        <div style="color:var(--text-muted);font-size:10px">Data Processing</div>
+      </div>
+      <div style="background:#0d1626;border:1px solid var(--border);border-radius:6px;padding:12px;text-align:center">
+        <div style="color:var(--cyan);font-size:14px;font-weight:700;margin-bottom:4px">Plotly</div>
+        <div style="color:var(--text-muted);font-size:10px">Interactive Visualizations</div>
+      </div>
+      <div style="background:#0d1626;border:1px solid var(--border);border-radius:6px;padding:12px;text-align:center">
+        <div style="color:var(--green);font-size:14px;font-weight:700;margin-bottom:4px">Scikit-learn</div>
+        <div style="color:var(--text-muted);font-size:10px">Machine Learning</div>
+      </div>
+      <div style="background:#0d1626;border:1px solid var(--border);border-radius:6px;padding:12px;text-align:center">
+        <div style="color:var(--green);font-size:14px;font-weight:700;margin-bottom:4px">SQLite</div>
+        <div style="color:var(--text-muted);font-size:10px">Local Database</div>
+      </div>
+      <div style="background:#0d1626;border:1px solid var(--border);border-radius:6px;padding:12px;text-align:center">
+        <div style="color:var(--amber);font-size:14px;font-weight:700;margin-bottom:4px">FastAPI</div>
+        <div style="color:var(--text-muted);font-size:10px">Backend API</div>
+      </div>
+      <div style="background:#0d1626;border:1px solid var(--border);border-radius:6px;padding:12px;text-align:center">
+        <div style="color:var(--amber);font-size:14px;font-weight:700;margin-bottom:4px">Three.js</div>
+        <div style="color:var(--text-muted);font-size:10px">3D Digital Twin (Phase 3)</div>
+      </div>
+      <div style="background:#0d1626;border:1px solid var(--border);border-radius:6px;padding:12px;text-align:center">
+        <div style="color:#a855f7;font-size:14px;font-weight:700;margin-bottom:4px">ReportLab</div>
+        <div style="color:var(--text-muted);font-size:10px">PDF Reports</div>
+      </div>
+      <div style="background:#0d1626;border:1px solid var(--border);border-radius:6px;padding:12px;text-align:center">
+        <div style="color:#a855f7;font-size:14px;font-weight:700;margin-bottom:4px">GitHub</div>
+        <div style="color:var(--text-muted);font-size:10px">Version Control</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- AI FEATURES -->
+  <section style="margin-bottom:32px">
+    <div class="panel-head"><span class="panel-title">AI Engine — Explainable Intelligence</span></div>
+    <div class="panel-box" style="padding:18px 20px">
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-bottom:16px">
+        <div style="background:#0a1020;border:1px solid var(--border);border-radius:6px;padding:14px">
+          <div style="color:var(--cyan);font-weight:700;font-size:12px;margin-bottom:6px">Isolation Forest</div>
+          <div style="color:var(--text-muted);font-size:11px">Anomaly detection — identifies readings deviating from personal baseline without labeled training data</div>
+        </div>
+        <div style="background:#0a1020;border:1px solid var(--border);border-radius:6px;padding:14px">
+          <div style="color:var(--green);font-weight:700;font-size:12px;margin-bottom:6px">Time Series Analysis</div>
+          <div style="color:var(--text-muted);font-size:11px">Statistical trend detection across all 9 biometric channels with day-over-day delta tracking</div>
+        </div>
+        <div style="background:#0a1020;border:1px solid var(--border);border-radius:6px;padding:14px">
+          <div style="color:var(--amber);font-weight:700;font-size:12px;margin-bottom:6px">LLM + RAG</div>
+          <div style="color:var(--text-muted);font-size:11px">Medical assistant grounded on NASA HRP evidence reports — no fabricated treatment instructions</div>
+        </div>
+      </div>
+      <div style="background:#0d1f10;border:1px solid rgba(74,222,128,.2);border-radius:6px;padding:12px;font-size:12px;color:var(--text-muted)">
+        <strong style="color:var(--green)">Explainable AI Principle:</strong> Every alert explains <em>which indicator changed</em>, <em>what the previous pattern was</em>, <em>current deviation magnitude</em>, <em>data confidence level</em>, and <em>recommended next step</em>. The system never outputs "Abnormal Condition" without full clinical context.
+      </div>
+    </div>
+  </section>
+
+  <!-- DEVELOPMENT ROADMAP - 4 PHASES -->
+  <section style="margin-bottom:32px">
+    <div class="panel-head"><span class="panel-title">Development Roadmap — 4-Phase Execution Plan</span></div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px">
+
+      <div class="panel-box" style="padding:18px;border-left:4px solid var(--cyan)">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+          <div style="color:var(--cyan);font-size:11px;text-transform:uppercase;letter-spacing:.1em;font-weight:700">Phase 1</div>
+          <div style="font-size:10px;color:var(--text-muted);background:rgba(56,189,248,.1);padding:2px 8px;border-radius:10px">1-2 Weeks</div>
+        </div>
+        <div style="color:#fff;font-weight:600;font-size:13px;margin-bottom:10px">Core System — MVP</div>
+        <ul style="color:var(--text-muted);font-size:11px;line-height:1.9;margin:0;padding-left:14px">
+          <li>Project Setup &amp; Folder Structure</li>
+          <li>SQLite Database Creation</li>
+          <li>Data Collection Interface</li>
+          <li>Data Processing (Pandas)</li>
+          <li>Mission Control Dashboard</li>
+          <li>Basic Health Analytics + Charts</li>
+        </ul>
+        <div style="margin-top:12px;padding:8px 10px;background:#0a1020;border-radius:4px;font-size:10px;color:var(--cyan)">Output: Working app — data input, display &amp; trend analysis</div>
+      </div>
+
+      <div class="panel-box" style="padding:18px;border-left:4px solid var(--green)">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+          <div style="color:var(--green);font-size:11px;text-transform:uppercase;letter-spacing:.1em;font-weight:700">Phase 2</div>
+          <div style="font-size:10px;color:var(--text-muted);background:rgba(74,222,128,.1);padding:2px 8px;border-radius:10px">1-2 Weeks</div>
+        </div>
+        <div style="color:#fff;font-weight:600;font-size:13px;margin-bottom:10px">AI Integration</div>
+        <ul style="color:var(--text-muted);font-size:11px;line-height:1.9;margin:0;padding-left:14px">
+          <li>Dataset Preparation (NASA OSDR / Synthetic)</li>
+          <li>Anomaly Detection Model (Isolation Forest)</li>
+          <li>Model Evaluation (Precision, Recall, F1)</li>
+          <li>AI Model Integration</li>
+          <li>AI Insights Dashboard</li>
+          <li>Alert System (4 severity levels)</li>
+        </ul>
+        <div style="margin-top:12px;padding:8px 10px;background:#0a1020;border-radius:4px;font-size:10px;color:var(--green)">Output: System detects anomalies + explains them</div>
+      </div>
+
+      <div class="panel-box" style="padding:18px;border-left:4px solid var(--amber)">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+          <div style="color:var(--amber);font-size:11px;text-transform:uppercase;letter-spacing:.1em;font-weight:700">Phase 3</div>
+          <div style="font-size:10px;color:var(--text-muted);background:rgba(251,191,36,.1);padding:2px 8px;border-radius:10px">2 Weeks</div>
+        </div>
+        <div style="color:#fff;font-weight:600;font-size:13px;margin-bottom:10px">Advanced Features</div>
+        <ul style="color:var(--text-muted);font-size:11px;line-height:1.9;margin:0;padding-left:14px">
+          <li>Digital Twin — Interactive 2D Body</li>
+          <li>Mental Wellness Monitoring Module</li>
+          <li>Mission Simulator (scenario-based)</li>
+          <li>Smart Medical Assistant (LLM + RAG)</li>
+          <li>Daily Wellness Check System</li>
+        </ul>
+        <div style="margin-top:12px;padding:8px 10px;background:#0a1020;border-radius:4px;font-size:10px;color:var(--amber)">Output: Interactive platform — not just a dashboard</div>
+      </div>
+
+      <div class="panel-box" style="padding:18px;border-left:4px solid #a855f7">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+          <div style="color:#a855f7;font-size:11px;text-transform:uppercase;letter-spacing:.1em;font-weight:700">Phase 4</div>
+          <div style="font-size:10px;color:var(--text-muted);background:rgba(168,85,247,.1);padding:2px 8px;border-radius:10px">1 Week</div>
+        </div>
+        <div style="color:#fff;font-weight:600;font-size:13px;margin-bottom:10px">Final Product</div>
+        <ul style="color:var(--text-muted);font-size:11px;line-height:1.9;margin:0;padding-left:14px">
+          <li>Offline Mode + Data Sync</li>
+          <li>PDF Report Generation (ReportLab)</li>
+          <li>Security &amp; Encryption (RBAC)</li>
+          <li>Full Testing Suite</li>
+          <li>UI / UX Polish</li>
+          <li>Deployment + Final Presentation</li>
+        </ul>
+        <div style="margin-top:12px;padding:8px 10px;background:#0a1020;border-radius:4px;font-size:10px;color:#a855f7">Output: Presentation-ready competition prototype</div>
+      </div>
+    </div>
+    <div style="margin-top:12px;padding:10px 14px;background:#0d1626;border:1px solid var(--border);border-radius:6px;font-size:11px;color:var(--text-muted);text-align:center">
+      Total Estimated Duration: <strong style="color:#fff">5–7 weeks</strong> depending on team size and scope depth
+    </div>
+  </section>
+
+  <!-- FEATURE PRIORITIZATION -->
+  <section style="margin-bottom:32px">
+    <div class="panel-head"><span class="panel-title">Feature Prioritization Matrix</span></div>
+    <div class="panel-box" style="padding:0;overflow:hidden">
+      <table style="width:100%;border-collapse:collapse;font-size:12px">
+        <thead>
+          <tr style="background:#0d1626;border-bottom:1px solid var(--border)">
+            <th style="padding:10px 14px;text-align:left;color:var(--cyan);text-transform:uppercase;font-size:10px;letter-spacing:.08em">Feature</th>
+            <th style="padding:10px 14px;text-align:center;color:var(--cyan);text-transform:uppercase;font-size:10px;letter-spacing:.08em">Priority</th>
+            <th style="padding:10px 14px;text-align:center;color:var(--cyan);text-transform:uppercase;font-size:10px;letter-spacing:.08em">Difficulty</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr style="border-bottom:1px solid rgba(255,255,255,.04)"><td style="padding:9px 14px;color:#fff">Dashboard</td><td style="padding:9px 14px;text-align:center"><span style="color:var(--cyan);font-size:10px;font-weight:700">ESSENTIAL</span></td><td style="padding:9px 14px;text-align:center;color:var(--green);font-size:10px">Easy</td></tr>
+          <tr style="border-bottom:1px solid rgba(255,255,255,.04)"><td style="padding:9px 14px;color:#fff">Data Collection</td><td style="padding:9px 14px;text-align:center"><span style="color:var(--cyan);font-size:10px;font-weight:700">ESSENTIAL</span></td><td style="padding:9px 14px;text-align:center;color:var(--green);font-size:10px">Easy</td></tr>
+          <tr style="border-bottom:1px solid rgba(255,255,255,.04)"><td style="padding:9px 14px;color:#fff">Health Analytics</td><td style="padding:9px 14px;text-align:center"><span style="color:var(--cyan);font-size:10px;font-weight:700">ESSENTIAL</span></td><td style="padding:9px 14px;text-align:center;color:var(--amber);font-size:10px">Medium</td></tr>
+          <tr style="border-bottom:1px solid rgba(255,255,255,.04)"><td style="padding:9px 14px;color:#fff">Anomaly Detection</td><td style="padding:9px 14px;text-align:center"><span style="color:var(--cyan);font-size:10px;font-weight:700">ESSENTIAL</span></td><td style="padding:9px 14px;text-align:center;color:var(--amber);font-size:10px">Medium</td></tr>
+          <tr style="border-bottom:1px solid rgba(255,255,255,.04)"><td style="padding:9px 14px;color:#fff">Alert System</td><td style="padding:9px 14px;text-align:center"><span style="color:var(--cyan);font-size:10px;font-weight:700">ESSENTIAL</span></td><td style="padding:9px 14px;text-align:center;color:var(--amber);font-size:10px">Medium</td></tr>
+          <tr style="border-bottom:1px solid rgba(255,255,255,.04)"><td style="padding:9px 14px;color:#fff">Digital Twin 2D</td><td style="padding:9px 14px;text-align:center"><span style="color:var(--green);font-size:10px;font-weight:700">IMPORTANT</span></td><td style="padding:9px 14px;text-align:center;color:var(--amber);font-size:10px">Medium</td></tr>
+          <tr style="border-bottom:1px solid rgba(255,255,255,.04)"><td style="padding:9px 14px;color:#fff">Mental Wellness</td><td style="padding:9px 14px;text-align:center"><span style="color:var(--green);font-size:10px;font-weight:700">IMPORTANT</span></td><td style="padding:9px 14px;text-align:center;color:var(--green);font-size:10px">Easy</td></tr>
+          <tr style="border-bottom:1px solid rgba(255,255,255,.04)"><td style="padding:9px 14px;color:#fff">PDF Reports</td><td style="padding:9px 14px;text-align:center"><span style="color:var(--green);font-size:10px;font-weight:700">IMPORTANT</span></td><td style="padding:9px 14px;text-align:center;color:var(--green);font-size:10px">Easy</td></tr>
+          <tr style="border-bottom:1px solid rgba(255,255,255,.04)"><td style="padding:9px 14px;color:#fff">Mission Simulator</td><td style="padding:9px 14px;text-align:center"><span style="color:var(--amber);font-size:10px;font-weight:700">ADVANCED</span></td><td style="padding:9px 14px;text-align:center;color:#ef4444;font-size:10px">Hard</td></tr>
+          <tr style="border-bottom:1px solid rgba(255,255,255,.04)"><td style="padding:9px 14px;color:#fff">3D Human Body</td><td style="padding:9px 14px;text-align:center"><span style="color:var(--amber);font-size:10px;font-weight:700">ADVANCED</span></td><td style="padding:9px 14px;text-align:center;color:#ef4444;font-size:10px">Hard</td></tr>
+          <tr><td style="padding:9px 14px;color:#fff">Smart Medical Assistant</td><td style="padding:9px 14px;text-align:center"><span style="color:var(--amber);font-size:10px;font-weight:700">ADVANCED</span></td><td style="padding:9px 14px;text-align:center;color:#ef4444;font-size:10px">Hard</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- FINAL DEMO SCENARIO -->
+  <section style="margin-bottom:32px">
+    <div class="panel-head"><span class="panel-title">Final Demo Scenario — Judging Walkthrough</span></div>
+    <div class="panel-box" style="padding:18px 20px">
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <div style="display:flex;gap:12px;align-items:flex-start;padding:12px;background:#0a1020;border-radius:6px">
+          <div style="min-width:28px;height:28px;border-radius:50%;background:var(--cyan);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#070a12">1</div>
+          <div><div style="color:#fff;font-size:12px;font-weight:600;margin-bottom:3px">Mission Start</div><div style="color:var(--text-muted);font-size:11px">Open ASTROCARE. Display Astronaut Profile, Mission Information, and Current Health Overview.</div></div>
+        </div>
+        <div style="display:flex;gap:12px;align-items:flex-start;padding:12px;background:#0a1020;border-radius:6px">
+          <div style="min-width:28px;height:28px;border-radius:50%;background:var(--green);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#070a12">2</div>
+          <div><div style="color:#fff;font-size:12px;font-weight:600;margin-bottom:3px">Health Data Entry</div><div style="color:var(--text-muted);font-size:11px">Astronaut inputs daily vitals. System saves &amp; updates dashboard in real time.</div></div>
+        </div>
+        <div style="display:flex;gap:12px;align-items:flex-start;padding:12px;background:#0a1020;border-radius:6px">
+          <div style="min-width:28px;height:28px;border-radius:50%;background:var(--amber);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#070a12">3</div>
+          <div><div style="color:#fff;font-size:12px;font-weight:600;margin-bottom:3px">AI Analysis</div><div style="color:var(--text-muted);font-size:11px">AI Insights module flags abnormal sleep + heart rate pattern vs. personal baseline. Full explainability shown.</div></div>
+        </div>
+        <div style="display:flex;gap:12px;align-items:flex-start;padding:12px;background:#0a1020;border-radius:6px">
+          <div style="min-width:28px;height:28px;border-radius:50%;background:#a855f7;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#070a12">4</div>
+          <div><div style="color:#fff;font-size:12px;font-weight:600;margin-bottom:3px">Digital Twin</div><div style="color:var(--text-muted);font-size:11px">Click on body region to see correlated health indicators and risk status.</div></div>
+        </div>
+        <div style="display:flex;gap:12px;align-items:flex-start;padding:12px;background:#0a1020;border-radius:6px">
+          <div style="min-width:28px;height:28px;border-radius:50%;background:#38bdf8;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#070a12">5</div>
+          <div><div style="color:#fff;font-size:12px;font-weight:600;margin-bottom:3px">Mission Simulator</div><div style="color:var(--text-muted);font-size:11px">Adjust sleep schedule &amp; exercise frequency. Watch projected trend changes in scenario model.</div></div>
+        </div>
+        <div style="display:flex;gap:12px;align-items:flex-start;padding:12px;background:#0a1020;border-radius:6px">
+          <div style="min-width:28px;height:28px;border-radius:50%;background:#ef4444;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff">6</div>
+          <div><div style="color:#fff;font-size:12px;font-weight:600;margin-bottom:3px">Medical Report</div><div style="color:var(--text-muted);font-size:11px">Generate PDF with Health Trends, AI Insights, Alerts, and full SBAR data history for Flight Surgeon review.</div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SCIENTIFIC SOURCES -->
+  <section style="margin-bottom:28px">
+    <div class="panel-head"><span class="panel-title">Scientific Sources</span></div>
+    <div class="panel-box" style="padding:18px 20px">
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px">
+        <div style="padding:12px;background:#0a1020;border-radius:6px;border-left:3px solid var(--cyan)">
+          <div style="color:#fff;font-size:12px;font-weight:600;margin-bottom:4px">NASA Human Research Program</div>
+          <div style="color:var(--text-muted);font-size:10px">Understanding spaceflight hazards &amp; countermeasures</div>
+        </div>
+        <div style="padding:12px;background:#0a1020;border-radius:6px;border-left:3px solid var(--green)">
+          <div style="color:#fff;font-size:12px;font-weight:600;margin-bottom:4px">NASA Open Science Data Repository (OSDR)</div>
+          <div style="color:var(--text-muted);font-size:10px">Physiological, behavioral &amp; biomedical spaceflight data</div>
+        </div>
+        <div style="padding:12px;background:#0a1020;border-radius:6px;border-left:3px solid var(--amber)">
+          <div style="color:#fff;font-size:12px;font-weight:600;margin-bottom:4px">NASA Human Research Roadmap</div>
+          <div style="color:var(--text-muted);font-size:10px">Evidence reports &amp; risk validation framework</div>
+        </div>
+        <div style="padding:12px;background:#0a1020;border-radius:6px;border-left:3px solid #a855f7">
+          <div style="color:#fff;font-size:12px;font-weight:600;margin-bottom:4px">ESA Human Spaceflight Services</div>
+          <div style="color:var(--text-muted);font-size:10px">European space medicine research archives</div>
+        </div>
+        <div style="padding:12px;background:#0a1020;border-radius:6px;border-left:3px solid #ef4444">
+          <div style="color:#fff;font-size:12px;font-weight:600;margin-bottom:4px">FDA CDS Software Guidance (2026)</div>
+          <div style="color:var(--text-muted);font-size:10px">Clinical Decision Support regulatory compliance</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- MEDICAL DISCLAIMER -->
+  <div style="padding:14px 18px;background:#1a0d0d;border:1px solid rgba(239,68,68,.3);border-radius:6px;font-size:11px;color:var(--text-muted);line-height:1.7">
+    <strong style="color:#ef4444">Medical Disclaimer:</strong> ASTROCARE is an experimental health-monitoring and decision-support prototype. It is not a medical diagnostic device and does not replace qualified medical professionals or mission-specific medical protocols. All alert thresholds and clinical recommendations displayed are for demonstration purposes and require validation by licensed flight surgeons before operational use.
+  </div>
+
+</div>
+
+<!-- ── ENLIST NEW ASTRONAUT MODAL ── -->
+<div class="modal-layer" id="enlist-modal">
+  <div class="modal-window">
+    <button class="modal-close-btn" id="btn-close-enlist">&times;</button>
+    <div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:#38bdf8;font-weight:700">CREW REGISTRATION FORM</div>
+    <h3 style="margin-top:4px;font-size:15px;color:#fff;margin-bottom:14px">Enlist & Calibrate New Astronaut Telemetry</h3>
+
+    <form id="enlist-form">
+      <div class="form-group">
+        <label class="form-label">Full Name & Rank</label>
+        <input type="text" id="new-crew-name" class="form-control" placeholder="e.g. Major Alex Bennett, MD" required>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <div class="form-group">
+          <label class="form-label">Flight Role / Specialty</label>
+          <input type="text" id="new-crew-role" class="form-control" placeholder="e.g. Payload Specialist" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Callsign / ID Tag</label>
+          <input type="text" id="new-crew-tag" class="form-control" placeholder="e.g. SCI-05" required>
+        </div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px">
+        <div class="form-group">
+          <label class="form-label">Age</label>
+          <input type="number" id="new-crew-age" class="form-control" value="38" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Blood Group</label>
+          <select id="new-crew-blood" class="form-control">
+            <option value="O+">O+</option>
+            <option value="A+">A+</option>
+            <option value="B+">B+</option>
+            <option value="AB+">AB+</option>
+            <option value="O-">O-</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">EVA Hours</label>
+          <input type="number" id="new-crew-eva" class="form-control" value="10" required>
+        </div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <div class="form-group">
+          <label class="form-label">Baseline Resting HR (bpm)</label>
+          <input type="number" id="new-crew-hr" class="form-control" value="68" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Baseline Systolic BP (mmHg)</label>
+          <input type="number" id="new-crew-bp" class="form-control" value="120" required>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Known Clinical Focus / Monitoring Directive</label>
+        <input type="text" id="new-crew-alert" class="form-control" placeholder="e.g. SANS Stage 0 surveillance; ARED load compliance target 70 min" value="Nominal baseline profile; continuous orbital monitoring assigned.">
+      </div>
+
+      <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:16px">
+        <button type="button" class="btn-secondary" id="btn-cancel-enlist">Cancel</button>
+        <button type="submit" class="btn-primary">Register & Calibrate Telemetry</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ── PROBLEM STATEMENT & MISSION SCOPE MODAL ── -->
+<div class="modal-layer" id="problem-modal">
+  <div class="modal-window" style="max-width:680px">
+    <button class="modal-close-btn" id="btn-close-problem">&times;</button>
+    <div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:#38bdf8;font-weight:700">NASA HUMAN RESEARCH PROGRAM · PROBLEM STATEMENT & SYSTEM MISSION</div>
+    <h3 style="margin-top:4px;font-size:16px;color:#fff;margin-bottom:12px">What Critical Problem Does AstroGuard Solve?</h3>
+
+    <div style="font-size:12px;line-height:1.7;color:var(--text-main)">
+      <div style="background:#050913;padding:12px;border-radius:4px;border:1px solid var(--border);margin-bottom:12px">
+        <b style="color:#38bdf8">1. THE CORE PROBLEM: DEEP SPACE MEDICAL AUTONOMY CRISIS</b><br>
+        On deep-space exploration missions (Lunar Gateway, Artemis Base Camp, and Mars Transit), astronauts operate outside Earth magnetosphere and hundreds of millions of kilometers from terrestrial hospitals:
+        <ul style="padding-left:18px;margin-top:6px">
+          <li><b>Communication Latency & Blackouts:</b> Radio signals take <b>4 to 24 minutes one-way</b> to reach Mars (up to 48 minutes round-trip), plus solar conjunction blackouts lasting up to 14 days. Real-time terrestrial telemedicine is clinically impossible during acute cardiac arrhythmias, SANS intraocular spikes, or acute trauma.</li>
+          <li><b>Multi-System Physiological Hostility:</b> Microgravity redistributes ~2 liters of venous fluid cephalad, crushing the optic nerve (SANS in &gt;70% of crew), deconditioning the left ventricle, and resorbing bone mineral density at <b>1.5% per month</b>.</li>
+          <li><b>Absence of Specialist Physicians:</b> A crew of 4 to 6 cannot carry an oncologist, ophthalmologist, cardiologist, and radiologist.</li>
+        </ul>
+      </div>
+
+      <div style="background:#050913;padding:12px;border-radius:4px;border:1px solid var(--border);margin-bottom:12px">
+        <b style="color:var(--green)">2. THE ASTROGUARD SOLUTION</b><br>
+        AstroGuard transforms raw biometric sensor telemetry into actionable clinical flight interventions without relying on Earth:
+        <ul style="padding-left:18px;margin-top:6px">
+          <li><b>Multi-Layer Anatomical Digital Twin:</b> Real-time mapping of 9 vital streams to specific organ systems with predictive risk modeling.</li>
+          <li><b>Evidence-Grounded CDSS:</b> Automated correlation with official NASA Human Research Roadmap countermeasures (LBNP decompression, ARED axial loading, circadian lighting, and storm shelter protocols).</li>
+          <li><b>Autonomous Store-and-Forward Telemetry:</b> Clinical SBAR handoff packets generated automatically for delayed ground transmission.</li>
+          <li><b>Dynamic Crew Registration:</b> Multi-astronaut calibration allowing custom baseline profiling for any crew member.</li>
+        </ul>
+      </div>
+
+      <div style="background:#050913;padding:10px;border-radius:4px;border:1px solid var(--border);font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text-muted)">
+        NASA MISSION: Expedition 72 (Mars Transit Phase) · HRP Elements: ExMC, SANS, Radiation, BHP, Cardio, Bone
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── DETAIL MODAL ── -->
+<div class="modal-layer" id="detail-modal">
+  <div class="modal-window">
+    <button class="modal-close-btn" id="btn-close-detail">&times;</button>
+    <div id="detail-modal-body"></div>
+  </div>
+</div>
+
+<script>
+/* ════════════════════════════════════════════════════════════════════
+   AstroGuard — Elite Aerospace Telemetry Software Engine
+   NASA Human Research Program Challenge
+════════════════════════════════════════════════════════════════════ */
+
+const $ = s => document.querySelector(s);
+const $$ = s => document.querySelectorAll(s);
+
+/* ── Default Primary Flight Crew ── */
+const DEFAULT_CREW = [
+  {
+    id: 1,
+    name: 'Commander Sarah Chen, MD',
+    role: 'Expedition Commander / Flight Surgeon',
+    tag: 'CDR-01',
+    age: 42,
+    bloodType: 'O+',
+    evaHours: 28,
+    daysInSpace: 184,
+    alerts: [
+      { sev: 'st-1', text: 'SANS Retinal Progression: +0.8D hyperopic shift. Optic nerve sheath diameter: 5.9mm (Ref >5.8mm).' },
+      { sev: 'st-1', text: 'Sleep Opportunity Deficit: 6.1h median over past 14 days (Target: 8.5h).' }
+    ],
+    vitals: {
+      hr: [66, 68, 64, 70, 72, 68, 66, 65, 69, 71, 70, 68, 67, 68],
+      bp: [116, 118, 120, 118, 122, 120, 118, 120, 122, 124, 120, 118, 119, 120],
+      gl: [92, 95, 94, 98, 96, 92, 94, 95, 96, 98, 94, 92, 93, 94],
+      tp: [36.7, 36.8, 36.7, 36.8, 36.9, 36.8, 36.7, 36.8, 36.7, 36.8, 36.9, 36.8, 36.8, 36.8],
+      sl: [6.4, 6.2, 5.9, 6.5, 6.1, 5.8, 6.3, 6.0, 5.9, 6.4, 6.1, 6.0, 6.2, 6.1],
+      md: [7.5, 7.8, 7.2, 7.0, 7.4, 7.1, 7.5, 7.0, 6.8, 7.2, 7.1, 7.0, 7.2, 7.1],
+      vs: [95, 94, 93, 92, 92, 91, 91, 90, 89, 89, 88, 88, 89, 88], // SANS progression
+      ex: [75, 80, 70, 65, 85, 75, 80, 70, 75, 80, 75, 70, 75, 75],
+      rd: [0.65, 0.68, 0.66, 0.70, 0.68, 0.65, 0.67, 0.69, 0.68, 0.71, 0.69, 0.68, 0.70, 0.68]
+    }
+  },
+  {
+    id: 2,
+    name: 'Col. Marcus Webb, USAF',
+    role: 'Flight Pilot / Systems Lead',
+    tag: 'PLT-02',
+    age: 39,
+    bloodType: 'A+',
+    evaHours: 44,
+    daysInSpace: 184,
+    alerts: [
+      { sev: 'st-0', text: 'Cardiovascular tolerance nominal. Orthostatic test negative.' },
+      { sev: 'st-0', text: 'ARED axial skeletal loading exceeding 5200N peak forces.' }
+    ],
+    vitals: {
+      hr: [60, 62, 58, 64, 62, 60, 61, 63, 62, 60, 59, 61, 62, 60],
+      bp: [120, 122, 124, 122, 120, 122, 124, 122, 120, 122, 120, 122, 121, 122],
+      gl: [96, 98, 95, 94, 96, 98, 95, 96, 98, 97, 95, 96, 94, 95],
+      tp: [36.6, 36.7, 36.6, 36.7, 36.8, 36.7, 36.6, 36.7, 36.6, 36.7, 36.6, 36.7, 36.7, 36.7],
+      sl: [7.2, 7.5, 7.1, 7.4, 7.6, 7.2, 7.5, 7.4, 7.3, 7.5, 7.6, 7.4, 7.5, 7.4],
+      md: [7.8, 8.0, 7.9, 8.1, 8.0, 7.8, 8.0, 7.9, 7.8, 8.0, 8.1, 7.9, 8.0, 8.0],
+      vs: [98, 98, 97, 98, 97, 98, 98, 97, 98, 98, 97, 98, 98, 98],
+      ex: [85, 90, 80, 85, 90, 85, 90, 80, 85, 90, 85, 80, 85, 85],
+      rd: [0.60, 0.62, 0.61, 0.63, 0.62, 0.60, 0.62, 0.61, 0.63, 0.62, 0.60, 0.62, 0.61, 0.61]
+    }
+  },
+  {
+    id: 3,
+    name: 'Dr. Amir Patel, PhD',
+    role: 'Mission Bio-Specialist / Astrobiologist',
+    tag: 'BIO-03',
+    age: 36,
+    bloodType: 'B+',
+    evaHours: 16,
+    daysInSpace: 184,
+    alerts: [
+      { sev: 'st-1', text: 'Glycemic Excursion: Postprandial glucose spike (118 mg/dL) following freeze-dried ration.' },
+      { sev: 'st-1', text: 'ARED exercise compliance at 45 min (Target: 60 min minimum).' }
+    ],
+    vitals: {
+      hr: [72, 74, 76, 75, 78, 74, 76, 78, 75, 77, 76, 75, 74, 76],
+      bp: [124, 126, 128, 126, 130, 128, 126, 128, 130, 128, 126, 128, 127, 128],
+      gl: [102, 108, 112, 106, 118, 110, 108, 114, 116, 110, 108, 112, 110, 114],
+      tp: [36.8, 36.9, 37.0, 36.9, 37.1, 37.0, 36.9, 37.0, 36.9, 37.0, 36.9, 37.0, 36.9, 37.0],
+      sl: [6.8, 7.0, 6.7, 7.1, 6.9, 6.8, 7.0, 6.9, 6.8, 7.0, 6.9, 7.1, 7.0, 6.9],
+      md: [7.2, 7.4, 7.0, 7.3, 7.1, 7.0, 7.2, 7.1, 7.0, 7.3, 7.1, 7.2, 7.1, 7.1],
+      vs: [96, 95, 96, 95, 96, 95, 95, 96, 95, 95, 96, 95, 95, 95],
+      ex: [45, 50, 40, 55, 45, 40, 50, 45, 40, 50, 45, 40, 45, 45],
+      rd: [0.68, 0.70, 0.69, 0.72, 0.70, 0.69, 0.71, 0.70, 0.72, 0.71, 0.69, 0.70, 0.71, 0.70]
+    }
+  },
+  {
+    id: 4,
+    name: 'Lt. Elena Rostova',
+    role: 'Orbital Flight Systems Engineer / ECLSS Lead',
+    tag: 'ENG-04',
+    age: 34,
+    bloodType: 'AB+',
+    evaHours: 12,
+    daysInSpace: 184,
+    alerts: [
+      { sev: 'st-0', text: 'ECLSS loop acoustic noise dampening verification complete.' },
+      { sev: 'st-0', text: 'Biometric telemetry nominal across all 9 physiological channels.' }
+    ],
+    vitals: {
+      hr: [68, 70, 66, 72, 70, 68, 69, 71, 70, 68, 69, 70, 69, 70],
+      bp: [112, 114, 116, 114, 112, 114, 116, 114, 112, 114, 116, 114, 115, 114],
+      gl: [88, 90, 89, 92, 90, 88, 90, 89, 91, 90, 89, 90, 91, 90],
+      tp: [36.6, 36.7, 36.6, 36.7, 36.8, 36.7, 36.6, 36.7, 36.6, 36.7, 36.6, 36.7, 36.7, 36.7],
+      sl: [7.0, 7.2, 6.9, 7.3, 7.1, 7.0, 7.2, 7.1, 7.0, 7.3, 7.1, 7.2, 7.1, 7.1],
+      md: [8.2, 8.4, 8.1, 8.5, 8.3, 8.2, 8.4, 8.3, 8.2, 8.5, 8.3, 8.4, 8.3, 8.3],
+      vs: [97, 97, 96, 97, 96, 97, 97, 96, 97, 97, 96, 97, 97, 97],
+      ex: [70, 75, 65, 80, 70, 75, 70, 65, 75, 70, 75, 70, 75, 70],
+      rd: [0.62, 0.64, 0.63, 0.65, 0.64, 0.62, 0.64, 0.63, 0.65, 0.64, 0.62, 0.64, 0.63, 0.63]
+    }
+  }
+];
+
+/* Load or initialize crew list from localStorage */
+let CREW = JSON.parse(localStorage.getItem('astroguard_crew')) || DEFAULT_CREW;
+
+/* ── Channels Specs ── */
+const CHANNEL_SPECS = {
+  hr: { name: 'Resting Heart Rate', unit: 'bpm', ok: [50, 90], warn: [45, 100], ref: '50-90' },
+  bp: { name: 'Systolic Blood Pressure', unit: 'mmHg', ok: [90, 130], warn: [85, 140], ref: '90-130' },
+  gl: { name: 'Blood Glucose', unit: 'mg/dL', ok: [70, 110], warn: [60, 140], ref: '70-110' },
+  tp: { name: 'Core Body Temperature', unit: '°C', ok: [36.1, 37.5], warn: [35.5, 38.0], ref: '36.1-37.5' },
+  sl: { name: 'Sleep Opportunity', unit: 'h', ok: [7.0, 9.0], warn: [6.0, 10.0], ref: '7.0-9.0' },
+  md: { name: 'Psychological Readiness', unit: '/10', ok: [6.0, 10.0], warn: [4.0, 10.0], ref: '6.0-10.0' },
+  vs: { name: 'Visual Refraction Index', unit: '%', ok: [90.0, 100.0], warn: [80.0, 100.0], ref: '90-100' },
+  ex: { name: 'ARED Axial Loading', unit: 'min', ok: [60.0, 200.0], warn: [30.0, 200.0], ref: '60-200' },
+  rd: { name: 'Active Dosimetry Telemetry', unit: 'mSv', ok: [0.0, 1.0], warn: [0.0, 1.5], ref: '0.0-1.0' }
+};
+
+/* ── Anatomical Organ System Definitions with Multi-layer targets ── */
+const ORGANS = {
+  brain: {
+    name: 'Brain & Cranial Neuro-Cognition', code: 'CNS-01', keys: ['sl', 'md'], hazard: 'Isolation and Confinement',
+    x: 100, y: 28, lx: 124, ly: 26, an: 'start', layer: 'neuro',
+    why: 'Continuous ambient acoustic noise and absence of 24h solar cycle desynchronize circadian rhythms, increasing reaction latency and cognitive degradation.',
+    protocols: [
+      'Shift cabin solid-state lighting assemblies to 480nm blue-depleted spectrum 2h pre-rest.',
+      'Administer 3-minute Psychomotor Vigilance Task (PVT) cognitive self-check.',
+      'Protect scheduled 8.5-hour crew sleep opportunity.'
+    ]
+  },
+  eyes: {
+    name: 'Eyes & Optic Nerve (SANS)', code: 'SANS-02', keys: ['vs'], hazard: 'Gravity Fields',
+    x: 100, y: 46, lx: 124, ly: 50, an: 'start', layer: 'neuro',
+    why: 'Cephalad venous fluid redistribution chronically elevates retrobulbar optic nerve sheath pressure (>5.8mm ONSD), causing hyperopic shift and choroidal folds.',
+    protocols: [
+      'Conduct fundoscopic imaging and Amsler grid self-evaluation.',
+      'Prescribe Lower Body Negative Pressure (LBNP) session at -30 mmHg for 30 mins.',
+      'Maintain dietary sodium <2000 mg/day to minimize fluid pressure.'
+    ]
+  },
+  heart: {
+    name: 'Cardiovascular Hemodynamics & Aorta', code: 'CARD-03', keys: ['hr', 'bp'], hazard: 'Gravity Fields',
+    x: 108, y: 122, layer: 'cardio',
+    why: 'Fluid loss and diminished hydrostatic pressure provoke cardiac left-ventricular remodeling and orthostatic intolerance upon re-entering gravity.',
+    protocols: [
+      'Execute cycle ergometer interval training at 75-85% VO2 peak.',
+      'Pre-load with electrolyte rehydration fluids prior to EVA or planetary descent.',
+      'Check orthostatic vital differential standing vs. supine.'
+    ]
+  },
+  gut: {
+    name: 'Gastrointestinal & Glycemic Metabolism', code: 'MET-04', keys: ['gl'], hazard: 'Hostile/Closed Environments',
+    x: 100, y: 178, layer: 'cardio',
+    why: 'Microgravity alters insulin responsiveness, requiring stringent caloric and macronutrient balancing.',
+    protocols: [
+      'Verify minimum 2800 kcal/day caloric intake.',
+      'Incorporate fresh Veggie habitat microgreens to replenish dietary antioxidants.',
+      'Postprandial fingerstick glucose monitoring 90 min post-ration.'
+    ]
+  },
+  skin: {
+    name: 'Immune System & Microbial Defense', code: 'IMM-05', keys: ['tp'], hazard: 'Hostile/Closed Environments',
+    x: 43, y: 208, layer: 'all',
+    why: 'Space stress dampens T-cell activity while closed ECLSS surfaces accelerate bacterial biofilm resistance.',
+    protocols: [
+      'Perform cabin air HEPA filtration inspection and surface microbial swabbing.',
+      'Administer Vitamin D3 and immune-supportive micronutrient supplementation.',
+      'Isolate symptomatic crew if core temperature exceeds 38.0°C.'
+    ]
+  },
+  bones: {
+    name: 'Skeletal Density & Spinal Axis', code: 'OST-06', keys: ['ex'], hazard: 'Gravity Fields',
+    x: 116, y: 304, layer: 'skeletal',
+    why: 'Unweighted trabecular bones lose 1-1.5% mineral density monthly without high axial resistive mechanical loading. Spinal elongation exceeds 4cm.',
+    protocols: [
+      'Prescribe ARED axial deadlift and squat protocol exceeding 5000N peak forces.',
+      'Monitor urine specific gravity and maintain >2.5L daily hydration to avert calcium kidney stones.',
+      'Track monthly heel ultrasound bone mineral density estimate.'
+    ]
+  },
+  rad: {
+    name: 'Radiation Dosimetry & DNA Protection', code: 'RAD-07', keys: ['rd'], hazard: 'Space Radiation',
+    x: 166, y: 60, lx: 166, ly: 42, an: 'middle', layer: 'all',
+    why: 'Galactic cosmic rays and solar flares create double-strand DNA damage and elevate lifetime cancer risk beyond Earth magnetosphere.',
+    protocols: [
+      'Continuous silicon active dosimeter telemetry verification.',
+      'Retreat to module core storm shelter if rate exceeds 10 mSv/hr.',
+      'Radio-protective antioxidant protocol administration.'
+    ]
+  }
+};
+
+/* ── Environment Presets ── */
+const ENVIRONMENTS = [
+  { name: 'Artemis VII — Mars Transit Vehicle', lag: 14, rad: 2.6, gravity: 'Microgravity', h: [42, 52, 28, 30, 35] },
+  { name: 'International Space Station (LEO)', lag: 0, rad: 1.0, gravity: 'Microgravity', h: [12, 16, 5, 30, 24] },
+  { name: 'Lunar Gateway / Artemis Base Camp', lag: 1, rad: 1.6, gravity: '1/6th g', h: [26, 32, 10, 20, 26] },
+  { name: 'Mars Surface Habitat (Arcadia Planitia)', lag: 14, rad: 1.2, gravity: '3/8th g', h: [22, 40, 28, 22, 32] }
+];
+
+/* ── Scraped NASA HRP Evidence Records ── */
+const NASA_EVIDENCE_RECORDS = [
+  {
+    code: 'SANS-HRP-701',
+    title: 'Spaceflight-Associated Neuro-ocular Syndrome (SANS) Guidelines',
+    hazard: 'Gravity Fields',
+    snippet: 'Cephalad venous fluid redistribution chronically elevates retrobulbar optic nerve sheath pressure (>5.8mm ONSD), causing hyperopic shift and choroidal folds.',
+    citation: 'NASA HRP Evidence Report: Human Eye Adaptation to Spaceflight',
+    url: 'https://humanresearchroadmap.nasa.gov/risks/?id=701'
+  },
+  {
+    code: 'RAD-DOS-402',
+    title: 'Galactic Cosmic Rays (GCR) & Solar Particle Event Shielding',
+    hazard: 'Space Radiation',
+    snippet: 'Traversing deep space without magnetosphere exposes crew to heavy HZE iron nuclei. Acute storm shelter protocol triggers at >10 mSv/hr.',
+    citation: 'NASA Space Radiation Program Element: Risk Projection Guidelines',
+    url: 'https://humanresearchroadmap.nasa.gov/risks/?id=191'
+  },
+  {
+    code: 'CARDIO-103',
+    title: 'Cardiovascular Remodeling & Lower Body Negative Pressure (LBNP)',
+    hazard: 'Gravity Fields',
+    snippet: 'Loss of hydrostatic pressure gradient reduces circulating plasma volume by 15% and causes post-flight orthostatic hypotension.',
+    citation: 'NASA Human Research Program: Cardiovascular System Adaptation',
+    url: 'https://humanresearchroadmap.nasa.gov/risks/?id=47'
+  },
+  {
+    code: 'OSTEO-204',
+    title: 'Bone Mineral Density Resorption & ARED Axial Loading Protocol',
+    hazard: 'Gravity Fields',
+    snippet: 'Trabecular bone loss reaches 1.5% per month in microgravity. Axial mechanical loading of >5000N via ARED and calcium titration prevents bone fracture.',
+    citation: 'NASA HRP Evidence Book: Bone Fracture and Osteoclast Dynamics',
+    url: 'https://humanresearchroadmap.nasa.gov/risks/?id=22'
+  },
+  {
+    code: 'BEHAV-505',
+    title: 'Psychomotor Vigilance Task (PVT) & Circadian Light Optimization',
+    hazard: 'Isolation and Confinement',
+    snippet: 'Chronic sleep debt under 6.0 hours elevates attentional lapses. 480nm blue-depleted evening lighting protects endogenous melatonin secretion.',
+    citation: 'NASA Behavioral Health & Performance Evidence Report',
+    url: 'https://humanresearchroadmap.nasa.gov/risks/?id=55'
+  },
+  {
+    code: 'EXPLOR-606',
+    title: 'Autonomous Clinical Medical Operations During Deep Space Latency',
+    hazard: 'Distance from Earth',
+    snippet: 'When communication latency exceeds 10 minutes round-trip, crew medical officers execute onboard decision support algorithms without ground approval.',
+    citation: 'NASA Exploration Medical Capability (ExMC) Architecture',
+    url: 'https://humanresearchroadmap.nasa.gov/risks/?id=88'
+  },
+  {
+    code: 'IMMUNE-307',
+    title: 'Immune Dysregulation & Opportunistic Microbial Virulence',
+    hazard: 'Hostile/Closed Environments',
+    snippet: 'Closed ECLSS environments accelerate bacterial biofilm resistance. Regular cabin swabbing and prophylactic antiviral/antibiotic protocols are required.',
+    citation: 'NASA HRP Evidence Report: Human Immune System Dysregulation',
+    url: 'https://humanresearchroadmap.nasa.gov/risks/?id=12'
+  },
+  {
+    code: 'NUTR-808',
+    title: 'Spaceflight Glycemic Regulation & Veggie Habitat Microgreens',
+    hazard: 'Hostile/Closed Environments',
+    snippet: 'Insulin sensitivity shifts in microgravity require continuous fingerstick glucometry and fresh antioxidant supplementation from space greenhouses.',
+    citation: 'NASA Nutritional Biochemistry: Human Spaceflight Requirements',
+    url: 'https://humanresearchroadmap.nasa.gov/risks/?id=34'
+  }
+];
+
+/* ── Runtime App State ── */
+let currentCrewIdx = 0;
+let currentOrganKey = 'heart';
+let currentLayer = 'all';
+let currentEnvIdx = 0;
+let isStormSurgeActive = false;
+let isLinkOffline = false;
+
+/* ── Helper: Vital Status ── */
+function getChannelStatus(key) {
+  const c = CREW[currentCrewIdx];
+  const spec = CHANNEL_SPECS[key];
+  const val = c.vitals[key][c.vitals[key].length - 1];
+  if (val >= spec.ok[0] && val <= spec.ok[1]) return 0;
+  if (val >= spec.warn[0] && val <= spec.warn[1]) return 1;
+  return 2;
+}
+
+function getOrganStatus(organKey) {
+  const o = ORGANS[organKey];
+  return Math.max(...o.keys.map(getChannelStatus));
+}
+
+const ST_CLASSES = ['st-0', 'st-1', 'st-2'];
+const ST_LABELS = ['NOMINAL', 'ELEVATED MONITORING', 'CRITICAL ACTION'];
+const ST_COLORS = ['var(--green)', 'var(--amber)', 'var(--red)'];
+
+/* ── Live ECG Canvas Loop ── */
+const ecgCanvas = document.getElementById('ecg-canvas');
+const ecgCtx = ecgCanvas.getContext('2d');
+let ecgX = 0;
+let ecgLastY = 21;
+let ecgFrameTick = 0;
+
+function runEcgLoop() {
+  const w = ecgCanvas.width = ecgCanvas.offsetWidth;
+  const h = ecgCanvas.height = ecgCanvas.offsetHeight;
+
+  const hr = CREW[currentCrewIdx].vitals.hr[13];
+  const speed = (hr / 60) * 2.3;
+
+  ecgCtx.strokeStyle = ST_COLORS[getChannelStatus('hr')];
+  ecgCtx.lineWidth = 1.6;
+
+  ecgCtx.fillStyle = 'rgba(3, 6, 15, 0.12)';
+  ecgCtx.fillRect(0, 0, w, h);
+
+  ecgCtx.beginPath();
+  ecgCtx.moveTo(ecgX, ecgLastY);
+
+  ecgX += speed;
+  if (ecgX >= w) ecgX = 0;
+
+  ecgFrameTick++;
+  let y = h / 2;
+
+  const phase = ecgFrameTick % 48;
+  if (phase === 8) y -= 3;
+  else if (phase === 16) y += 4;
+  else if (phase === 18) y -= 16; // R Peak
+  else if (phase === 20) y += 7;
+  else if (phase === 28) y -= 5;
+  else y += (Math.random() - 0.5) * 1.2;
+
+  ecgCtx.lineTo(ecgX, y);
+  ecgCtx.stroke();
+  ecgLastY = y;
+
+  requestAnimationFrame(runEcgLoop);
+}
+requestAnimationFrame(runEcgLoop);
+
+/* ── Sparkline SVG Generator ── */
+function makeSparkline(arr, color) {
+  const min = Math.min(...arr);
+  const max = Math.max(...arr);
+  const w = 95, h = 24;
+  const pts = arr.map((val, idx) => {
+    const x = (idx * w / (arr.length - 1)).toFixed(1);
+    const y = (h - 2 - (val - min) / ((max - min) || 1) * (h - 4)).toFixed(1);
+    return `${x},${y}`;
+  }).join(' ');
+
+  const lastY = (h - 2 - (arr[arr.length - 1] - min) / ((max - min) || 1) * (h - 4)).toFixed(1);
+
+  return `<svg width="${w}" height="${h}" viewBox="0 0 ${w} ${h}">
+    <polyline points="${pts}" fill="none" stroke="${color}" stroke-width="1.8"/>
+    <circle cx="${w}" cy="${lastY}" r="2.5" fill="${color}"/>
+  </svg>`;
+}
+
+/* ── Render Top Crew Deck ── */
+function renderCrewRoster() {
+  const activeCrew = CREW[currentCrewIdx];
+  // Update Header Pill
+  const headerAvatar = $('#header-crew-avatar');
+  if (headerAvatar) headerAvatar.textContent = activeCrew.tag;
+  const headerName = $('#header-crew-name');
+  if (headerName) headerName.textContent = activeCrew.name.split(',')[0];
+  const headerRole = $('#header-crew-role');
+  if (headerRole) headerRole.textContent = `${activeCrew.role.split('/')[0]} · ${activeCrew.bloodType}`;
+  const countEl = $('#shutter-crew-count');
+  if (countEl) countEl.textContent = CREW.length;
+
+  // Render Shutter Vertical List
+  $('#crew-roster-list').innerHTML = CREW.map((c, idx) => {
+    const isAct = idx === currentCrewIdx;
+    const worstStatus = Math.max(...Object.keys(c.vitals).map(k => {
+      const spec = CHANNEL_SPECS[k];
+      if (!spec) return 0;
+      const val = c.vitals[k][c.vitals[k].length - 1];
+      if (val >= spec.ok[0] && val <= spec.ok[1]) return 0;
+      if (val >= spec.warn[0] && val <= spec.warn[1]) return 1;
+      return 2;
+    }));
+    const sbp = c.vitals.bp[c.vitals.bp.length - 1];
+    const dbp = c.vitals.dbp ? c.vitals.dbp[c.vitals.dbp.length - 1] : Math.round(sbp * 0.65);
+    const hr = c.vitals.hr[c.vitals.hr.length - 1];
+    const spo2 = c.vitals.vs[c.vitals.vs.length - 1];
+
+    return `
+      <div class="crew-item-card ${isAct ? 'active' : ''}" data-crew="${idx}">
+        <div class="crew-item-tag">${c.tag}</div>
+        <div class="crew-item-info">
+          <div class="crew-item-name">${c.name}</div>
+          <div class="crew-item-meta">${c.role} · ${c.bloodType} · Day ${c.daysInSpace}</div>
+          <div class="crew-item-vitals-mini">
+            <span>HR: <b>${hr}</b></span>
+            <span>BP: <b>${sbp}/${dbp}</b></span>
+            <span>SpO₂: <b>${spo2}%</b></span>
+          </div>
+        </div>
+        <div class="status-pill ${ST_CLASSES[worstStatus]}"></div>
+      </div>
+    `;
+  }).join('');
+
+  // Update detailed bio card in shutter
+  const profileCard = $('#shutter-selected-profile');
+  if (profileCard) {
+    profileCard.innerHTML = `
+      <div style="font-size:10px;color:var(--cyan);font-weight:700;letter-spacing:0.06em;text-transform:uppercase">CALIBRATED CLINICAL PROFILE</div>
+      <div style="font-size:13px;font-weight:700;color:#fff;margin-top:2px">${activeCrew.name} [${activeCrew.tag}]</div>
+      <div style="font-size:11px;color:var(--text-muted);margin-bottom:8px">${activeCrew.role}</div>
+      <div class="profile-meta-grid">
+        <div class="profile-meta-item">Age: <b>${activeCrew.age} yrs</b></div>
+        <div class="profile-meta-item">Blood Group: <b>${activeCrew.bloodType}</b></div>
+        <div class="profile-meta-item">EVA Hours: <b>${activeCrew.evaHours} h</b></div>
+        <div class="profile-meta-item">Flight Days: <b>${activeCrew.daysInSpace} d</b></div>
+      </div>
+      <div style="margin-top:8px;padding-top:8px;border-top:1px solid rgba(148,163,184,0.12);font-size:11px;color:var(--text-muted)">
+        <strong style="color:var(--cyan)">Active Directive:</strong> ${activeCrew.alerts && activeCrew.alerts.length ? activeCrew.alerts[0].text : 'Nominal orbital monitoring.'}
+      </div>
+    `;
+  }
+}
+
+/* ── Render Anatomical Twin ── */
+function renderDigitalTwin() {
+  const c = id => ST_CLASSES[getOrganStatus(id)];
+
+  $('#dynamic-organs').innerHTML = `
+    <!-- Brain / CNS -->
+    <ellipse class="organ-shape ${c('brain')}" cx="100" cy="30" rx="13" ry="10"/>
+    <!-- Optic Nerves / Eyes -->
+    <ellipse class="organ-shape ${c('eyes')}" cx="92" cy="46" rx="4.5" ry="3"/>
+    <ellipse class="organ-shape ${c('eyes')}" cx="108" cy="46" rx="4.5" ry="3"/>
+    <!-- Lungs & Thoracic Cage -->
+    <path class="organ-shape" style="fill:#0284c7;fill-opacity:0.2" d="M86 92C76 96 74 130 80 144C86 148 94 142 95 128C96 110 94 96 86 92ZM114 92C124 96 126 130 120 144C114 148 106 142 105 128C104 110 106 96 114 92Z"/>
+    <!-- Heart & Aortic Arch -->
+    <path class="organ-shape ${c('heart')}" d="M108 134C96 125 96 112 104 112C107 112 108 115 108 115C108 115 109 112 112 112C120 112 120 125 108 134Z"/>
+    <!-- GI / Metabolism -->
+    <path class="organ-shape ${c('gut')}" d="M84 162C84 152 116 152 116 162C122 172 116 196 100 198C84 196 78 172 84 162Z"/>
+    <!-- Vertebral Spine & Femurs -->
+    <path class="bone-structure ${c('bones')}" d="M100 76V252M88 92Q100 98 112 92M88 104Q100 110 112 104M88 116Q100 122 112 116"/>
+    <path class="bone-structure ${c('bones')}" d="M114 262L118 344M86 262L82 344M114 262Q100 252 86 262"/>
+    <path class="bone-structure ${c('bones')}" d="M148 92L158 196M52 92L42 196" stroke-opacity="0.35"/>
+    <!-- Lymphatic / Immune nodes -->
+    <ellipse class="organ-shape ${c('skin')}" cx="43" cy="209" rx="7" ry="9"/>
+    <ellipse class="organ-shape ${c('skin')}" cx="157" cy="209" rx="7" ry="9"/>
+  `;
+
+  // Render clickable hotspots matching active layer filter
+  $('#hotspot-nodes').innerHTML = Object.entries(ORGANS)
+    .filter(([id, o]) => currentLayer === 'all' || o.layer === currentLayer || o.layer === 'all')
+    .map(([id, o]) => {
+      const lx = o.lx ?? o.x, ly = o.ly ?? o.y + 24, an = o.an || 'middle';
+      const st = getOrganStatus(id);
+      return `<g class="clickable-target ${ST_CLASSES[st]} ${id === currentOrganKey ? 'sel' : ''}" data-target-organ="${id}">
+        <circle cx="${o.x}" cy="${o.y}" r="8"/>
+        <text x="${lx}" y="${ly}" text-anchor="${an}">[${o.code}]</text>
+      </g>`;
+    }).join('');
+
+  $('#callouts-container').innerHTML = Object.entries(ORGANS).map(([id, o]) => {
+    const st = getOrganStatus(id);
+    return `<button class="callout-btn ${id === currentOrganKey ? 'active' : ''}" data-target-organ="${id}">
+      <span class="status-pill ${ST_CLASSES[st]}" style="width:6px;height:6px"></span>${o.name.split(' ')[0]}
+    </button>`;
+  }).join('');
+
+  $('#active-astronaut-tag').textContent = `${CREW[currentCrewIdx].tag} · ${CREW[currentCrewIdx].name.split(' ')[0]}`;
+}
+
+/* ── Render Selected Organ Channels & Protocols ── */
+function renderActiveOrganChannels() {
+  const o = ORGANS[currentOrganKey];
+  const st = getOrganStatus(currentOrganKey);
+  const c = CREW[currentCrewIdx];
+
+  $('#organ-focus-name').textContent = `${o.name} [${ST_LABELS[st]}]`;
+  $('#organ-focus-hazard').textContent = `HAZARD VECTOR: ${o.hazard.toUpperCase()}`;
+  $('#organ-rationale-display').textContent = o.why;
+
+  $('#vitals-stack-container').innerHTML = o.keys.map(k => {
+    const spec = CHANNEL_SPECS[k];
+    const series = c.vitals[k];
+    const val = series[series.length - 1];
+    const s = getChannelStatus(k);
+    const col = ST_COLORS[s];
+
+    return `<div class="vital-strip">
+      <div class="vital-info">
+        <div class="title">
+          <span class="status-pill ${ST_CLASSES[s]}"></span>${spec.name}
+        </div>
+        <div class="envelope">Flight Standard: ${spec.ref} ${spec.unit}</div>
+      </div>
+      <div class="vital-reading" style="color:${col}">
+        ${val} <small style="font-size:10px;color:var(--text-muted)">${spec.unit}</small>
+      </div>
+      <div>${makeSparkline(series, col)}</div>
+    </div>`;
+  }).join('');
+
+  $('#countermeasures-deck').innerHTML = o.protocols.map((p, i) => `
+    <div class="clinical-memo" style="border-left-color:#10b981;margin-bottom:6px">
+      <div class="memo-head">
+        <span>Prescribed Clinical Action ${i + 1}</span>
+        <span>HRP-DIRECTIVE</span>
+      </div>
+      <div class="memo-body">${p}</div>
+    </div>
+  `).join('');
+}
+
+/* ── Render NASA 5-Hazards Radar Pentagon ── */
+function calculateHazardMetrics() {
+  const env = ENVIRONMENTS[currentEnvIdx];
+  const lag = +$('#lag-range').value;
+  const base = [...env.h];
+
+  if (lag > 5) base[2] += Math.min(38, Math.round(lag * 2.1));
+  if (isStormSurgeActive) base[0] += 48;
+
+  const c = CREW[currentCrewIdx];
+  if (c.vitals.vs[13] < 90) base[3] += 12; // SANS impact
+  if (c.vitals.sl[13] < 6.5) base[1] += 10; // Sleep debt
+
+  return [
+    Math.min(100, base[0]),
+    Math.min(100, base[1]),
+    Math.min(100, base[2]),
+    Math.min(100, base[3]),
+    Math.min(100, base[4])
+  ];
+}
+
+function renderRadarPentagon() {
+  const scores = calculateHazardMetrics();
+  const names = ['Radiation', 'Isolation', 'Distance', 'Gravity', 'Closed Env'];
+  const cx = 150, cy = 130, R = 90;
+
+  const getPt = (idx, factor) => {
+    const angle = -Math.PI / 2 + idx * 2 * Math.PI / 5;
+    return [cx + Math.cos(angle) * R * factor, cy + Math.sin(angle) * R * factor];
+  };
+
+  let svgContent = '';
+  [0.25, 0.5, 0.75, 1.0].forEach(f => {
+    const pts = [0, 1, 2, 3, 4].map(i => getPt(i, f).join(',')).join(' ');
+    svgContent += `<polygon points="${pts}" fill="none" stroke="var(--border)" stroke-width="0.8"/>`;
+  });
+
+  [0, 1, 2, 3, 4].map(i => {
+    const [x, y] = getPt(i, 1.22);
+    svgContent += `<text x="${x}" y="${y}" text-anchor="middle" font-size="9.5" font-family="'JetBrains Mono',monospace" fill="var(--text-muted)">${names[i]}</text>`;
+  });
+
+  const polyPts = scores.map((s, idx) => getPt(idx, Math.max(0.08, s / 100)).join(',')).join(' ');
+  const avg = scores.reduce((a, b) => a + b, 0) / 5;
+  const col = avg > 55 ? 'var(--red)' : (avg > 35 ? 'var(--amber)' : '#0284c7');
+
+  svgContent += `<polygon points="${polyPts}" fill="${col}" fill-opacity="0.25" stroke="${col}" stroke-width="2"/>`;
+  $('#radar-svg').innerHTML = svgContent;
+
+  $('#radar-stat-tags').innerHTML = scores.map((s, i) => `
+    <span class="stat-tag">${names[i]}: <b style="color:#fff">${s}</b></span>
+  `).join('');
+
+  const readiness = Math.max(0, Math.round(100 - avg));
+  $('#crew-readiness-index').textContent = readiness;
+  $('#crew-readiness-index').style.color = readiness > 75 ? 'var(--green)' : (readiness > 50 ? 'var(--amber)' : 'var(--red)');
+}
+
+/* ── Render Tab 3: Advanced Bio-Analytics ── */
+function renderBioAnalytics() {
+  const c = CREW[currentCrewIdx];
+  const sbp = c.vitals.bp[13];
+  const hr = c.vitals.hr[13];
+  const vs = c.vitals.vs[13];
+
+  // Clinical Formulas
+  const map = Math.round((sbp + 2 * (sbp * 0.65)) / 3);
+  const rpp = Math.round((hr * sbp) / 100);
+  const eIcp = (vs < 90 ? (18.5 + (90 - vs) * 0.8).toFixed(1) : (11.0 + (100 - vs) * 0.2).toFixed(1));
+  const hrv = Math.round(58 + (c.vitals.sl[13] * 3.5) - (hr * 0.3));
+  const boneResorption = (100 - c.vitals.ex[13] * 0.6).toFixed(1);
+
+  $('#analytics-deck').innerHTML = `
+    <div class="analytic-tile">
+      <div class="analytic-tile-lbl">Estimated Intracranial Pressure (eICP)</div>
+      <div class="analytic-tile-val" style="color:${eIcp > 18 ? 'var(--red)' : 'var(--green)'}">${eIcp} <small style="font-size:12px">mmHg</small></div>
+      <div class="analytic-tile-desc">Normal: 7-15 mmHg. Correlated with cephalad optic disc elevation & SANS choroidal folds.</div>
+    </div>
+
+    <div class="analytic-tile">
+      <div class="analytic-tile-lbl">Mean Arterial Pressure (MAP)</div>
+      <div class="analytic-tile-val" style="color:var(--cyan)">${map} <small style="font-size:12px">mmHg</small></div>
+      <div class="analytic-tile-desc">Quantifies organ perfusion pressure. Threshold target: 70-105 mmHg in microgravity.</div>
+    </div>
+
+    <div class="analytic-tile">
+      <div class="analytic-tile-lbl">Rate-Pressure Product (Myocardial Load)</div>
+      <div class="analytic-tile-val" style="color:var(--text-main)">${rpp} <small style="font-size:12px">bpm·mmHg/100</small></div>
+      <div class="analytic-tile-desc">Indicator of myocardial oxygen consumption. Normal resting band: 70-100.</div>
+    </div>
+
+    <div class="analytic-tile">
+      <div class="analytic-tile-lbl">Heart Rate Variability (SDNN Estimator)</div>
+      <div class="analytic-tile-val" style="color:${hrv < 50 ? 'var(--amber)' : 'var(--green)'}">${hrv} <small style="font-size:12px">ms</small></div>
+      <div class="analytic-tile-desc">Autonomic nervous balance marker. Drops under cumulative flight stress and sleep curtailment.</div>
+    </div>
+
+    <div class="analytic-tile">
+      <div class="analytic-tile-lbl">Trabecular Bone Resorption Index</div>
+      <div class="analytic-tile-val" style="color:${boneResorption > 60 ? 'var(--amber)' : 'var(--green)'}">${boneResorption} <small style="font-size:12px">%</small></div>
+      <div class="analytic-tile-desc">Estimated urinary calcium loss versus ARED resistive exercise axial countermeasure load.</div>
+    </div>
+
+    <div class="analytic-tile">
+      <div class="analytic-tile-lbl">Cumulative Mission Radiation Exposure</div>
+      <div class="analytic-tile-val" style="color:var(--cyan)">${(c.daysInSpace * c.vitals.rd[13]).toFixed(1)} <small style="font-size:12px">mSv</small></div>
+      <div class="analytic-tile-desc">Career limit: 600 mSv. GCR background dose accumulation over ${c.daysInSpace} flight days.</div>
+    </div>
+  `;
+}
+
+/* ── Render Tab 4: NASA HRP Evidence Dossiers ── */
+function renderEvidence(records) {
+  $('#dossiers-grid-container').innerHTML = records.map(r => `
+    <div class="dossier-card" onclick="openEvidenceModal('${r.code}')">
+      <div>
+        <div class="dossier-code">[${r.code}] · ${r.hazard}</div>
+        <div class="dossier-title">${r.title}</div>
+        <div class="dossier-summary">${r.snippet}</div>
+      </div>
+      <div class="dossier-source">OFFICIAL SOURCE: ${r.citation} &rarr;</div>
+    </div>
+  `).join('');
+}
+
+function openEvidenceModal(code) {
+  const rec = NASA_EVIDENCE_RECORDS.find(r => r.code === code);
+  if (!rec) return;
+  $('#detail-modal-body').innerHTML = `
+    <div style="font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:700;color:#38bdf8">[${rec.code}] ${rec.hazard}</div>
+    <h3 style="margin-top:6px;font-size:15px;color:#fff">${rec.title}</h3>
+    <p style="font-size:12px;line-height:1.7;color:var(--text-main);margin:12px 0">${rec.snippet}</p>
+    <div style="background:#050913;padding:12px;border-radius:4px;border:1px solid var(--border);font-size:11px">
+      <b>NASA Clinical Practice Citation:</b><br><span style="color:var(--text-muted)">${rec.citation}</span><br><br>
+      <b>Official Roadmap Reference:</b><br><a href="${rec.url}" target="_blank" style="color:#38bdf8;word-break:break-all">${rec.url}</a>
+    </div>
+  `;
+  $('#detail-modal').classList.add('open');
+}
+
+/* ── Render Tab 5: Ground Flight Surgeon Roster ── */
+function renderFlightSurgeonDeck() {
+  $('#matrix-crew-container').innerHTML = CREW.map(c => `
+    <div class="surgeon-crew-card">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+        <div>
+          <div style="font-weight:700;font-size:13px;color:#fff">${c.name}</div>
+          <div style="font-size:10px;color:var(--text-muted)">${c.role} · ${c.bloodType}</div>
+        </div>
+        <div class="crew-avatar-callsign">${c.tag}</div>
+      </div>
+      <div class="crew-stats-table">
+        <div class="stat-cell">HR: <b>${c.vitals.hr[13]} bpm</b></div>
+        <div class="stat-cell">BP: <b>${c.vitals.bp[13]} mmHg</b></div>
+        <div class="stat-cell">SLEEP: <b>${c.vitals.sl[13]} h</b></div>
+        <div class="stat-cell">SANS VIS: <b>${c.vitals.vs[13]}%</b></div>
+      </div>
+      <div style="margin-top:8px;font-size:10px;color:var(--text-muted)">
+        ${c.alerts.map(a => `<div style="margin-top:3px">&bull; <span class="status-pill ${a.sev}" style="width:5px;height:5px;display:inline-block"></span> ${a.text}</div>`).join('')}
+      </div>
+    </div>
+  `).join('');
+
+  $('#flight-incident-stream').innerHTML = `
+    <div class="clinical-memo" style="border-left-color:var(--amber)">
+      <b>[HRP-INCIDENT 401] CDR Sarah Chen:</b> Optical coherence tomography confirms optic disc elevation (+0.8D). LBNP decompression (-30 mmHg) scheduled.
+    </div>
+    <div class="clinical-memo" style="border-left-color:var(--green)">
+      <b>[HRP-LOG] Col. Marcus Webb:</b> ARED axial resistive deadlift session completed (85 min, 5200N peak axial force).
+    </div>
+    <div class="clinical-memo" style="border-left-color:var(--amber)">
+      <b>[HRP-INCIDENT 208] Dr. Amir Patel:</b> Glycemic excursion (118 mg/dL) registered. Prescribed dietary balance and space garden greens.
+    </div>
+  `;
+}
+
+/* ── Interactive Crew Switching ── */
+document.addEventListener('click', e => {
+  const tab = e.target.closest('[data-crew]');
+  if (tab) {
+    currentCrewIdx = +tab.dataset.crew;
+    renderCrewRoster();
+    renderDigitalTwin();
+    renderActiveOrganChannels();
+    renderRadarPentagon();
+    renderBioAnalytics();
+    closeCrewShutter();
+  }
+
+  const organBtn = e.target.closest('[data-target-organ]');
+  if (organBtn) {
+    currentOrganKey = organBtn.dataset.targetOrgan;
+    renderDigitalTwin();
+    renderActiveOrganChannels();
+  }
+
+  const layerBtn = e.target.closest('[data-layer]');
+  if (layerBtn) {
+    $$('.layer-btn').forEach(b => b.classList.remove('active'));
+    layerBtn.classList.add('active');
+    currentLayer = layerBtn.dataset.layer;
+    renderDigitalTwin();
+  }
+});
+
+/* ── Tab Bar Navigation ── */
+$$('.tab-btn').forEach(btn => {
+  btn.onclick = () => {
+    $$('.tab-btn').forEach(b => b.classList.remove('active'));
+    $$('.tab-view').forEach(v => v.classList.remove('active'));
+    btn.classList.add('active');
+    $(`#tab-${btn.dataset.tab}`).classList.add('active');
+
+    if (btn.dataset.tab === 'analytics') renderBioAnalytics();
+  };
+});
+
+/* ── Modal Close Listeners ── */
+$('#btn-open-problem-modal').onclick = () => $('#problem-modal').classList.add('open');
+$('#btn-close-problem').onclick = () => $('#problem-modal').classList.remove('open');
+$('#problem-modal').onclick = e => { if (e.target === $('#problem-modal')) $('#problem-modal').classList.remove('open'); };
+$('#btn-close-enlist').onclick = () => $('#enlist-modal').classList.remove('open');
+$('#btn-cancel-enlist').onclick = () => $('#enlist-modal').classList.remove('open');
+$('#btn-close-detail').onclick = () => $('#detail-modal').classList.remove('open');
+$('#detail-modal').onclick = e => { if (e.target === $('#detail-modal')) $('#detail-modal').classList.remove('open'); };
+$('#enlist-modal').onclick = e => { if (e.target === $('#enlist-modal')) $('#enlist-modal').classList.remove('open'); };
+
+/* ── Enlist New Astronaut Modal Trigger & Form Submission ── */
+$('#btn-open-enlist-modal').onclick = () => {
+  $('#enlist-modal').classList.add('open');
+};
+
+$('#enlist-form').onsubmit = e => {
+  e.preventDefault();
+
+  const name = $('#new-crew-name').value.trim();
+  const role = $('#new-crew-role').value.trim();
+  const tag = $('#new-crew-tag').value.trim().toUpperCase();
+  const age = +$('#new-crew-age').value;
+  const blood = $('#new-crew-blood').value;
+  const eva = +$('#new-crew-eva').value;
+  const hrBase = +$('#new-crew-hr').value;
+  const bpBase = +$('#new-crew-bp').value;
+  const alertText = $('#new-crew-alert').value.trim();
+
+  // Synthesize realistic 14-day telemetry series around baselines
+  const makeSeries = (base, dev, isInt = false) => {
+    const s = [];
+    for (let i = 0; i < 14; i++) {
+      const v = base + (Math.sin(i * 0.8) + (Math.random() - 0.5)) * dev;
+      s.push(isInt ? Math.round(v) : +v.toFixed(1));
+    }
+    return s;
+  };
+
+  const newAstronaut = {
+    id: CREW.length + 1,
+    name: name,
+    role: role,
+    tag: tag,
+    age: age,
+    bloodType: blood,
+    evaHours: eva,
+    daysInSpace: 184,
+    alerts: [
+      { sev: 'st-0', text: alertText }
+    ],
+    vitals: {
+      hr: makeSeries(hrBase, 3, true),
+      bp: makeSeries(bpBase, 4, true),
+      dbp: makeSeries(Math.round(bpBase * 0.65), 3, true),
+      gl: makeSeries(94, 5, true),
+      tp: makeSeries(36.8, 0.15),
+      sl: makeSeries(7.2, 0.4),
+      md: makeSeries(8.0, 0.5),
+      vs: makeSeries(96, 1.2, true),
+      ex: makeSeries(75, 8, true),
+      rd: makeSeries(0.65, 0.04)
+    }
+  };
+
+  CREW.push(newAstronaut);
+  localStorage.setItem('astroguard_crew', JSON.stringify(CREW));
+
+  currentCrewIdx = CREW.length - 1; // Auto select new crew
+  $('#enlist-modal').classList.remove('open');
+  $('#enlist-form').reset();
+
+  renderCrewRoster();
+  renderDigitalTwin();
+  renderActiveOrganChannels();
+  renderRadarPentagon();
+  renderFlightSurgeonDeck();
+  renderBioAnalytics();
+
+  alert(`Astronaut ${name} [${tag}] successfully enlisted into active Expedition 72 flight telemetry!`);
+};
+
+/* ── Environment Selector ── */
+$('#env-select').innerHTML = ENVIRONMENTS.map((e, idx) => `
+  <option value="${idx}">${e.name}</option>
+`).join('');
+
+$('#env-select').onchange = e => {
+  currentEnvIdx = +e.target.value;
+  $('#lag-range').value = ENVIRONMENTS[currentEnvIdx].lag;
+  $('#lag-indicator').textContent = `${ENVIRONMENTS[currentEnvIdx].lag}m`;
+  renderRadarPentagon();
+};
+
+$('#lag-range').oninput = e => {
+  $('#lag-indicator').textContent = `${e.target.value}m`;
+  renderRadarPentagon();
+};
+
+/* ── SPE Solar Storm Alert ── */
+$('#btn-spe-trigger').onclick = () => {
+  isStormSurgeActive = !isStormSurgeActive;
+  $('#spe-emergency-bar').style.display = isStormSurgeActive ? 'block' : 'none';
+  $('#btn-spe-trigger').textContent = isStormSurgeActive ? 'Cancel SPE Event' : 'SPE Flare Event';
+
+  CREW.forEach(c => {
+    c.vitals.rd[13] = isStormSurgeActive ? 5.2 : 0.68;
+  });
+
+  renderDigitalTwin();
+  renderActiveOrganChannels();
+  renderRadarPentagon();
+  renderBioAnalytics();
+};
+
+/* ── Link Offline Toggle ── */
+$('#btn-offline-toggle').onclick = () => {
+  isLinkOffline = !isLinkOffline;
+  $('#btn-offline-toggle').textContent = isLinkOffline ? 'Uplink: Offline (Autonomous)' : 'Uplink: Online';
+  $('#btn-offline-toggle').style.borderColor = isLinkOffline ? 'var(--amber)' : 'var(--border)';
+  $('#btn-offline-toggle').style.color = isLinkOffline ? 'var(--amber)' : 'var(--text-main)';
+};
+
+/* ── Diagnostic Image Analyzer (Tab 2) ── */
+$('#scan-file-selector').onchange = e => {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = evt => {
+    $('#scan-image-elem').src = evt.target.result;
+    $('#scan-preview-wrapper').style.display = 'block';
+    $('#scan-classifier-output').innerHTML = 'Ingesting diagnostic scan into onboard multi-spectral classifier...';
+    setTimeout(() => {
+      $('#scan-classifier-output').innerHTML = `
+        &bull; Modality: High-Resolution Clinical Imaging Capture<br>
+        &bull; Target: Optic Disc / Retinal Vascular Caliber Analysis<br>
+        &bull; Finding: Microvascular contour stable. Retinal nerve layer within expected flight bounds.<br>
+        &bull; Recommendation: Continue 14-day optical coherence tomography protocol.
+      `;
+    }, 1000);
+  };
+  reader.readAsDataURL(file);
+};
+
+/* ── Clinical Evaluation Trigger (Tab 2) ── */
+$('#btn-run-full-assessment').onclick = () => {
+  const btn = $('#btn-run-full-assessment');
+  btn.textContent = 'Processing Clinical Decision Support Pipeline...';
+  btn.disabled = true;
+
+  const crew = CREW[currentCrewIdx];
+  const checkedSymptoms = Array.from($$('.sym-input:checked')).map(cb => cb.parentNode.textContent.trim());
+
+  setTimeout(() => {
+    const isCritical = checkedSymptoms.some(s => s.includes('SANS') || s.includes('Dosimeter')) || isStormSurgeActive || crew.vitals.vs[13] < 90;
+    const isWarn = checkedSymptoms.length > 0 || crew.vitals.sl[13] < 6.5;
+
+    $('#eval-status-badge').textContent = isCritical ? 'STATUS: CRITICAL INTERVENTION' : (isWarn ? 'STATUS: ELEVATED MONITORING' : 'STATUS: NOMINAL');
+    $('#eval-status-badge').style.color = isCritical ? 'var(--red)' : (isWarn ? 'var(--amber)' : 'var(--green)');
+
+    $('#eval-execution-trace').innerHTML = `
+      <div>[PASS 1] Ingested 9 biometric channels for ${crew.name}.</div>
+      <div>[PASS 2] Correlated findings against NASA HRP 5-Hazard Risk Matrix.</div>
+      <div>[PASS 3] RAG vector retrieval pulled clinical countermeasures.</div>
+      <div>[PASS 4] Formulated structured SBAR Ground Telemetry packet.</div>
+    `;
+
+    $('#eval-findings-container').innerHTML = `
+      <div class="clinical-memo" style="border-left-color:#38bdf8">
+        <div class="memo-head">
+          <span>Clinical Telemetry Synthesis</span>
+          <span>HRP-DIAG</span>
+        </div>
+        <div class="memo-body">
+          Active signs for ${crew.name}: ${checkedSymptoms.length ? checkedSymptoms.join('; ') : 'Telemetry parameters nominal across all monitored envelopes.'}
+        </div>
+      </div>
+      <div class="clinical-memo" style="border-left-color:${isCritical ? 'var(--red)' : 'var(--green)'}">
+        <div class="memo-head">
+          <span>Prescribed Countermeasure Protocol</span>
+          <span>NASA-ACTION</span>
+        </div>
+        <div class="memo-body">
+          ${isCritical
+            ? 'Critical Directive: Initiate immediate -30 mmHg LBNP decompression session. Titrate cabin fluid balance. Transmit emergency SBAR.'
+            : 'Standard Directive: Maintain prescribed 75 min ARED axial loading. Continue 14-day optical coherence tomography tracking.'
+          }
+        </div>
+      </div>
+    `;
+
+    const sbarContent = `
+      <b>SITUATION:</b> ${crew.name} (${crew.tag}) presenting with: ${checkedSymptoms.length ? checkedSymptoms.join('; ') : 'Standard flight physical'}.<br>
+      <b>BACKGROUND:</b> Expedition 72 Mars transit day +184. One-way comms latency: ${$('#lag-range').value} min.<br>
+      <b>ASSESSMENT:</b> ${isCritical ? 'Acute spaceflight environmental stress adaptation breach.' : 'Physiological tolerance within standard mission parameters.'}<br>
+      <b>RECOMMENDATION:</b> ${isCritical ? 'Immediate ground flight surgeon consultation. Execute onboard autonomous clinical countermeasures.' : 'Continue scheduled flight operations.'}
+    `;
+
+    $('#sbar-text-content').innerHTML = sbarContent;
+    $('#sbar-card-box').style.display = 'block';
+
+    btn.textContent = 'Execute Integrated Bio-Medical Diagnostic Evaluation';
+    btn.disabled = false;
+  }, 750);
+};
+
+/* ── Transmit SBAR Telemetry Packet ── */
+$('#btn-transmit-sbar').onclick = () => {
+  const lag = +$('#lag-range').value;
+  const log = $('#comms-log');
+  const nowStr = new Date().toISOString().substring(11, 19);
+  const crew = CREW[currentCrewIdx];
+
+  const entry = document.createElement('div');
+  entry.style.marginTop = '4px';
+
+  if (isLinkOffline) {
+    entry.innerHTML = `<span style="color:var(--amber)">[QUEUED-OFFLINE]</span> ${nowStr} ${crew.tag} SBAR stored locally. Sync pending link restoration.`;
+  } else if (lag > 0) {
+    entry.innerHTML = `<span style="color:#38bdf8">[TRANSMITTING]</span> ${nowStr} ${crew.tag} SBAR packet en route to Houston MCC (${lag} min lag)...`;
+    setTimeout(() => {
+      entry.innerHTML = `<span style="color:var(--green)">[ACKNOWLEDGED]</span> ${nowStr} ${crew.tag} Flight Surgeon received packet. Review complete.`;
+    }, Math.min(lag * 1000, 3000));
+  } else {
+    entry.innerHTML = `<span style="color:var(--green)">[DELIVERED]</span> ${nowStr} ${crew.tag} Real-time telemetry packet verified by MCC Flight Surgeon.`;
+  }
+
+  log.prepend(entry);
+};
+
+/* ── Evidence Search & Filter (Tab 4) ── */
+function filterEvidenceCards() {
+  const q = $('#evidence-filter-input').value.toLowerCase();
+  const hazard = $('#evidence-category-select').value;
+
+  const filtered = NASA_EVIDENCE_RECORDS.filter(r => {
+    const matchQ = !q || r.title.toLowerCase().includes(q) || r.snippet.toLowerCase().includes(q) || r.code.toLowerCase().includes(q);
+    const matchHazard = !hazard || r.hazard === hazard;
+    return matchQ && matchHazard;
+  });
+
+  renderEvidence(filtered);
+}
+
+$('#evidence-filter-input').oninput = filterEvidenceCards;
+$('#evidence-category-select').onchange = filterEvidenceCards;
+
+$('#btn-sync-evidence').onclick = () => {
+  const btn = $('#btn-sync-evidence');
+  btn.textContent = 'Syncing...';
+  setTimeout(() => {
+    btn.textContent = 'Index Synchronized!';
+    setTimeout(() => btn.textContent = 'Sync Scraped Evidence', 1500);
+  }, 600);
+};
+
+/* ── Export Clinical Telemetry Log (.txt) ── */
+$('#btn-export-clinical-log').onclick = () => {
+  const lines = [
+    '========================================================================',
+    'NASA HUMAN RESEARCH PROGRAM — CLINICAL TELEMETRY RECORD',
+    `Generated: ${new Date().toUTCString()}`,
+    `Mission: Expedition 72 — Artemis VII Mars Transit Phase`,
+    `Elapsed Mission Time: +184d 08h 22m`,
+    '========================================================================',
+    '',
+    '--- CREW ROSTER HEALTH STATUS ---',
+    ...CREW.map(c => `[${c.tag}] ${c.name} | Role: ${c.role} | Blood: ${c.bloodType} | EVA: ${c.evaHours}h | SANS: ${c.vitals.vs[13]}%`),
+    '',
+    '--- ACTIVE HAZARD EXPOSURE INDEX ---',
+    ...calculateHazardMetrics().map((val, idx) => `[HAZARD-${idx + 1}] ${['Space Radiation', 'Isolation & Confinement', 'Distance from Earth', 'Gravity Fields', 'Closed Environments'][idx]}: ${val}/100`),
+    '',
+    '========================================================================',
+    'Decision-support operational telemetry. NASA HRP Clinical Practice Framework.',
+    '========================================================================'
+  ];
+
+  const blob = new Blob([lines.join('\n')], { type: 'text/plain' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `NASA_HRP_AstroGuard_Clinical_Log_${new Date().toISOString().substring(0, 10)}.txt`;
+  a.click();
+};
+
+/* ── Export Bio-Analytics JSON ── */
+$('#btn-export-analytics-json').onclick = () => {
+  const c = CREW[currentCrewIdx];
+  const payload = {
+    astronaut: c.name,
+    tag: c.tag,
+    role: c.role,
+    daysInSpace: c.daysInSpace,
+    vitalsLatest: Object.fromEntries(Object.keys(c.vitals).map(k => [k, c.vitals[k][13]])),
+    history14Day: c.vitals,
+    generatedAt: new Date().toISOString()
+  };
+
+  const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `AstroGuard_Analytics_${c.tag}_${new Date().toISOString().substring(0, 10)}.json`;
+  a.click();
+};
+
+/* ── UTC Clock Live Ticks ── */
+setInterval(() => {
+  const now = new Date();
+  $('#utc-clock').textContent = now.toUTCString().substring(17, 25) + ' UTC';
+}, 1000);
+
+/* ── Crew Side Shutter Controls ── */
+const shutter = $('#crew-side-shutter');
+const shutterBackdrop = $('#crew-shutter-backdrop');
+function openCrewShutter() {
+  if (shutter) shutter.classList.add('open');
+  if (shutterBackdrop) shutterBackdrop.classList.add('open');
+}
+function closeCrewShutter() {
+  if (shutter) shutter.classList.remove('open');
+  if (shutterBackdrop) shutterBackdrop.classList.remove('open');
+}
+const btnToggleShutter = $('#btn-toggle-crew-shutter');
+if (btnToggleShutter) {
+  btnToggleShutter.onclick = () => {
+    if (shutter && shutter.classList.contains('open')) closeCrewShutter();
+    else openCrewShutter();
+  };
+}
+const btnCloseShutter = $('#btn-close-crew-shutter');
+if (btnCloseShutter) btnCloseShutter.onclick = closeCrewShutter;
+if (shutterBackdrop) shutterBackdrop.onclick = closeCrewShutter;
+
+/* ── Init ── */
+renderCrewRoster();
+renderDigitalTwin();
+renderActiveOrganChannels();
+renderRadarPentagon();
+renderEvidence(NASA_EVIDENCE_RECORDS);
+renderFlightSurgeonDeck();
+renderBioAnalytics();
+
+</script>
+
+</body>
+</html>
